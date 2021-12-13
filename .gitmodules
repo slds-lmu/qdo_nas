@@ -1,0 +1,9 @@
+[submodule "mlr3mbo"]
+	path = mlr3mbo
+	url = git@github.com:sumny/mlr3mbo
+[submodule "bbotk"]
+	path = bbotk
+	url = git@github.com:sumny/bbotk
+[submodule "naszilla"]
+	path = naszilla
+	url = git@github.com:sumny/naszilla
