@@ -4,6 +4,10 @@ bop_wrapper = function(job, data, instance, ...) {
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
 
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
+
   naszilla = import("naszilla", convert = FALSE)
 
   scenario = as.character(instance$scenario)
@@ -31,11 +35,7 @@ bop_wrapper = function(job, data, instance, ...) {
   ranger = lrn("regr.ranger")
   ranger$param_set$values$se.method = "jack"
   learner = ranger
-  surrogate = default_surr  #use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
-  #use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
-ogate(instance, learner = learner, n_learner = 2L)
+  surrogate = default_surrogate(instance, learner = learner, n_learner = 2L)
   surrogate$y_cols = c(y_var, feature_var)
   surrogate$x_cols = paste0("P", 1:n_paths)
   surrogate$archive = instance$archive
@@ -70,6 +70,10 @@ parego_wrapper = function(job, data, instance, ...) {
   #use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
+
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
 
@@ -136,6 +140,10 @@ smsego_wrapper = function(job, data, instance, ...) {
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
 
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
+
   naszilla = import("naszilla", convert = FALSE)
 
   scenario = as.character(instance$scenario)
@@ -200,6 +208,10 @@ random_search_wrapper = function(job, data, instance, ...) {
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
 
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
+
   naszilla = import("naszilla", convert = FALSE)
 
   scenario = as.character(instance$scenario)
@@ -247,6 +259,10 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   #use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
+
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
 
@@ -308,6 +324,10 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   #use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
   use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
   use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/")
+
+  logger = lgr::get_logger("bbotk")
+  logger$set_threshold("warn")
+  future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
 

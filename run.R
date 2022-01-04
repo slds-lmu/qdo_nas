@@ -26,7 +26,7 @@ for (sf in source_files) {
   source(sf)
 }
 
-reg = makeExperimentRegistry(file.dir = "/gscratch/lschnei8/registry_qdo_nas", packages = packages, source = source_files)
+reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas", packages = packages, source = source_files)
 # reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)
 saveRegistry(reg)
 
