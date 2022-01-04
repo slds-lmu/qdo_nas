@@ -1,25 +1,39 @@
-nas_sampler = function(n, col_x = "arch") {
-  stopifnot(n == 1L)  # FIXME:
-  # FIXME: requires ss
-  list(data = setNames(data.table(x = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))), nm = col_x))
-}
-
-nas_sampler_hb = function(n, col_x = "arch") {
-  data = map_dtr(seq_len(n), function(i) {
-    setNames(data.table(x = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))), nm = col_x)
-  })
-  list(data = data)
-}
-
-OptimizerNAS = R6Class("OptimizerNAS",
-  inherit = Optimizer,
+# Custom sampler for architectures
+# FIXME: document and cleanup
+NASSampler = R6Class("NASSampler",
   public = list(
+    ss = NULL,
+
+    col_x = NULL,
 
     #' @description
     #' Creates a new instance of this [R6][R6::R6Class] class.
-    initialize = function(y_col = NULL) {
+    initialize = function(ss, col_x = "arch") {
+      self$ss = ss
+      self$col_x = col_x
+    },
+
+    sample = function(n) {
+      data = map_dtr(seq_len(n), function(i) {
+        setNames(data.table(x = list(self$ss$get_cell()$random_cell(self$ss$nasbench, "adj"))), nm = self$col_x)
+      })
+      list(data = data)
+    }
+  )
+)
+
+# FIXME: document
+OptimizerNAS = R6Class("OptimizerNAS",
+  inherit = Optimizer,
+  public = list(
+    ss = NULL,
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    initialize = function(ss, y_col = NULL) {
       param_set = ps()
 
+      self$ss = ss
       self$y_col = assert_string(y_col, null.ok = TRUE)
 
       super$initialize(
@@ -29,10 +43,8 @@ OptimizerNAS = R6Class("OptimizerNAS",
       )
     },
 
-    # FIXME: document
     archive = NULL,
 
-    # FIXME: document
     y_col = NULL
   ),
 
@@ -44,14 +56,12 @@ OptimizerNAS = R6Class("OptimizerNAS",
       n_mutations = 100L  # FIXME: in param_set; this is overall - per candidate is ceiling(n_mutations / NROW(candidates))
       candidates = archive$best()[, c(archive$cols_x, y_col, "cell_hash"), with = FALSE]  # for QDO best per niche, otherwise best pareto
       n_mutations = ceiling(n_mutations / NROW(candidates))
-      #setorderv(candidates, cols = y_col, order = surrogate_mult_max_to_min(archive$codomain, y_cols = y_col))
-      #candidates = candidates[seq_len(n_select), ]
       mutations = rbindlist(apply(candidates, MARGIN = 1L, FUN = function(candidate) {
         arch = candidate$arch
-        cell = ss$get_cell(arch)
+        cell = self$ss$get_cell(arch)
         tmp = map_dtr(seq_len(n_mutations), function(i) {
-          mutation = cell$mutate(ss$nasbench)
-          data.table(arch = list(mutation), cell_hash = paste0(py_to_r(ss$get_hash(mutation)), collapse = ""))
+          mutation = cell$mutate(self$ss$nasbench)
+          data.table(arch = list(mutation), cell_hash = paste0(py_to_r(self$ss$get_hash(mutation)), collapse = ""))
         })
         tmp = tmp[which(!duplicated(tmp$cell_hash) & tmp$cell_hash %nin% archive$data$cell_hash), ]
         tmp
@@ -61,13 +71,12 @@ OptimizerNAS = R6Class("OptimizerNAS",
   )
 )
 
-get_test_loss = function(arch) {
+get_test_loss = function(arch, ss) {
   cell = ss$get_cell(arch)
   data.table(test_loss = py_to_r(cell$get_test_loss(ss$nasbench)))
 }
 
-cummin_per_niche = function(archive, budget_var = "epoch") {
-  # FIXME: id --> iter
+cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", worst = 100) {
   data = copy(archive$data)
 
   if ("x_domain" %in% names(data)) {
@@ -76,23 +85,77 @@ cummin_per_niche = function(archive, budget_var = "epoch") {
   data$orig = seq_len(NROW(data))
   data = data[, lapply(.SD, unlist), by = orig]
   data[, orig := NULL]
-  data[, id := seq_len(.N)]
+  data[, iter := seq_len(.N)]
 
   max_to_min = mult_max_to_min(archive$codomain)
-  y_ids = c(archive$codomain$ids(tags = "minimize"), archive$codomain$ids(tags = "maximize"))
+  y_ids = if (is.null(y_var)) {
+    c(archive$codomain$ids(tags = "minimize"), archive$codomain$ids(tags = "maximize"))
+  } else {
+    y_var
+  }
 
-  res = map_dtr(data$id, function(i) {
-    tmp = data[id <= i, ]
+  niches_ids = map_chr(nb$niches, "id")
+
+  res = map_dtr(data$iter, function(i) {
+    tmp = data[iter <= i, ]
     res = tmp[, .(incumbent = cummin(get(y_ids))), by = .(niche)]
     res = res[, .(incumbent = min(incumbent)), by = .(niche)]
-    #wide = dcast(tmp[, .(incumbent = cummin(get(y_ids))), by = .(niche)], . ~ niche, value.var = "incumbent", fun.aggregate = min)[, -1L]
-    #wide[, id := i]
-    #wide[, cumbudget := sum(tmp[[budget_var]])]
-    #wide
-    res[, id := i]
+    for (nid in niches_ids[niches_ids %nin% res$niche]) {
+      res = rbind(res, data.table(niche = nid, incumbent = worst))
+    }
+    res[, iter := i]
     res[, cumbudget := sum(tmp[[budget_var]])]
     res
   }, .fill = TRUE)
   res
 }
+
+# from https://github.com/mlr-org/miesmuschel/blob/master/R/TerminatorBudget.R
+TerminatorBudget = R6Class("TerminatorBudget", inherit = Terminator,
+  public = list(
+    #' @description
+    #' Initialize the `TerminatorBudget` object.
+    initialize = function() {
+      param_set = ps(budget = p_dbl(tags = "required"), aggregate = p_uty(tags = "required", custom_check = function(x) {
+        if (test_function(x) && test_number(x(NULL), finite = TRUE)) return(TRUE)
+        "must be a function with one argument, which when called with NULL must return a finite numeric value."
+      }))
+      param_set$values = list(budget = Inf, aggregate = sum)
+      super$initialize(param_set = param_set, properties = c("single-crit", "multi-crit"))
+      self$unit = "percent"
+    },
+
+    #' @description
+    #' Is `TRUE` if when the termination criterion is matched, `FALSE` otherwise.
+    #' @param archive [`Archive`][bbotk::Archive]
+    #'   Archive to check.
+    #' @return `logical(1)`: Whether to terminate.
+    is_terminated = function(archive) {
+      assert_r6(archive, "Archive")
+      params = self$param_set$get_values()
+      budget_id = archive$search_space$ids(tags = "budget")
+      if (length(budget_id) != 1) stopf("Need exactly one budget parameter, but found %s: %s",
+        length(budget_id), str_collapse(budget_id))
+      params$aggregate(archive$data[[budget_id]]) >= params$budget
+    }
+  ),
+  private = list(
+    .status = function(archive) {
+      params = self$param_set$get_values()
+      budget_id = archive$search_space$ids(tags = "budget")
+      if (length(budget_id) != 1) stopf("Need exactly one budget parameter, but found %s: %s",
+        length(budget_id), str_collapse(budget_id))
+
+      origin = params$aggregate(NULL)
+      aggregated = params$aggregate(archive$data[[budget_id]])
+
+      c(
+        max_steps = if (params$budget <= origin) 0 else 100,
+        # when budget <= origin, then we are terminated from the beginning, and want to avoid negative numbers / division by 0.
+        current_steps = if (params$budget <= origin) 0 else floor((aggregated - origin) / (params$budget - origin) * 100)
+      )
+    }
+  )
+)
+mlr_terminators$add("budget", TerminatorBudget)
 
