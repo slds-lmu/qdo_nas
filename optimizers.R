@@ -1,8 +1,8 @@
 bop_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
@@ -69,8 +69,8 @@ bop_wrapper = function(job, data, instance, ...) {
 parego_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
@@ -139,8 +139,8 @@ parego_wrapper = function(job, data, instance, ...) {
 smsego_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
@@ -208,8 +208,8 @@ smsego_wrapper = function(job, data, instance, ...) {
 random_search_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
@@ -261,8 +261,8 @@ random_search_wrapper = function(job, data, instance, ...) {
 bohb_qdo_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
@@ -327,8 +327,8 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
 hb_qdo_wrapper = function(job, data, instance, ...) {
   #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
   #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3")
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas")
+  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
+  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
   library(reticulate)
 
   logger = lgr::get_logger("bbotk")
