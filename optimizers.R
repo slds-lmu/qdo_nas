@@ -281,7 +281,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_qdo_mf(ss, nb = nb, n_evals = 100L)
+    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 100L * 108L)
   } else if (scenario == "nb201") {
     stop("Not supported.")
   }
@@ -347,7 +347,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_qdo_mf(ss, nb = nb, n_evals = 100L)
+    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 100L * 108L)
   } else if (scenario == "nb201") {
     stop("Not supported.")
   }
