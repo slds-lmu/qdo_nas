@@ -10,11 +10,11 @@ source("helpers.R")
 naszilla = import("naszilla", convert = FALSE)
 ss = naszilla$nas_benchmarks$Nasbench201()
 
-nb1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 0.086)))
-nb2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0.086, 0.0115)))
-nb3 = NicheBoundaries$new("niche3", niche_boundaries = list(latency = c(0.0115, 0.0132)))
-nb4 = NicheBoundaries$new("niche4", niche_boundaries = list(latency = c(0.0132, 0.0150)))
-nb5 = NicheBoundaries$new("niche5", niche_boundaries = list(latency = c(0.0150, Inf)))
+nb1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 0.0086)))
+nb2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0, 0.0115)))
+nb3 = NicheBoundaries$new("niche3", niche_boundaries = list(latency = c(0, 0.0132)))
+nb4 = NicheBoundaries$new("niche4", niche_boundaries = list(latency = c(0, 0.0150)))
+nb5 = NicheBoundaries$new("niche5", niche_boundaries = list(latency = c(0, Inf)))
 nb = NichesBoundaries$new("test", niches_boundaries = list(niche1 = nb1, niche2 = nb2, niche3 = nb3, niche4 = nb4, niche5 = nb5))
 
 ################################################################################################### BOP
@@ -78,7 +78,10 @@ do_bop = function(design) {
   acq_optimizer$acq_function = ejie
 
   bayesopt_bop(instance, acq_function = ejie, acq_optimizer = acq_optimizer, sampler = nas_sampler)
-  tmp = instance$archive$best()
+  instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, "latency", with = FALSE])]
+  instance$archive$data[, epoch := 108]
+
+  tmp = cummin_per_niche(instance$archive, nb = nb, y_var = "val_loss")
   tmp[, method := "bop"]
   tmp
 }
@@ -143,7 +146,10 @@ do_parego = function(design) {
   acq_optimizer$acq_function = ei
   
   bayesopt_parego(instance, acq_function = ei, acq_optimizer = acq_optimizer)  # FIXME: also needs custom sampler
-  tmp = instance$archive$best()
+  instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, "latency", with = FALSE])]
+  instance$archive$data[, epoch := 108]
+
+  tmp = cummin_per_niche(instance$archive, nb = nb, y_var = "val_loss")
   tmp[, method := "parego"]
   tmp
 }
@@ -208,7 +214,10 @@ do_smsego = function(design) {
   acq_optimizer$acq_function = sms
   
   bayesopt_smsego(instance, acq_function = sms, acq_optimizer = acq_optimizer)  # FIXME: also needs custom sampler
-  tmp = instance$archive$best()
+  instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, "latency", with = FALSE])]
+  instance$archive$data[, epoch := 108]
+
+  tmp = cummin_per_niche(instance$archive, nb = nb, y_var = "val_loss")
   tmp[, method := "smsego"]
   tmp
 }
@@ -257,12 +266,17 @@ do_random = function(design) {
   for (i in seq_len(NROW(points))) {
     instance$eval_batch(points[i, ])
   }
-  tmp = instance$archive$best()
+  instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, "latency", with = FALSE])]
+  instance$archive$data[, epoch := 108]
+
+  tmp = cummin_per_niche(instance$archive, nb = nb, y_var = "val_loss")
   tmp[, method := "random"]
   tmp
 }
 
-results = map_dtr(1:100, function(r) {
+################################################################################################### run
+
+results = map_dtr(1:10, function(r) {
   set.seed(r)
   design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench))))
   bop = do_bop(design)
@@ -274,35 +288,27 @@ results = map_dtr(1:100, function(r) {
   tmp
 })
 
-results_add = map_dtr(1:100, function(r) {
-  set.seed(r)
-  design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench))))
-  tmp = do_bop(design)
-  tmp[, repl := r]
-  tmp[, method := "bop_noverlap"]
-  tmp
-})
+results[, cumbudget := cumbudget / 108]
+results_agg = results[, .(mean = mean(incumbent), se = sd(incumbent) / sqrt(.N)), by = .(cumbudget, method, niche)]
+results_sum = results[, .(overall = sum(incumbent)), by = .(cumbudget, method, repl)]
+results_sum_agg = results_sum[, .(overall_mean = mean(overall), overall_se = sd(overall) / sqrt(.N)), by = .(cumbudget, method)]
 
-results[, dominated := bbotk::is_dominated(rbind(val_loss, latency)), by = .(method)]
-results_clean = results[dominated == FALSE, ]
 
 library(ggplot2)
-g = ggplot(aes(x = latency, y = val_loss, colour = method), data = results_clean) +
-  geom_point(alpha = 0.5, size = 3) +
-  geom_step(alpha = 1, direction =) +
-  geom_vline(xintercept = c(map_dbl(nb$niches, function(n) n$niche_boundaries$latency[2L])[-5L])) +
-  xlim(c(0, 0.025))
-ggsave("nb201.png", plot = g, width = 15, height = 5)
+library(pammtools)
+g = ggplot(aes(x = cumbudget, y = mean, colour = niche, fill = niche), data = results_agg) +
+  geom_step() +
+  geom_stepribbon(aes(ymin = mean - se, ymax = mean + se), colour = NA, alpha = 0.5) +
+  facet_wrap(~ method) +
+  xlim(c(0, 100 * 108))
+g = ggplot(aes(x = cumbudget, y = overall_mean, colour = method, fill = method), data = results_sum_agg) +
+  geom_step() +
+  geom_stepribbon(aes(ymin = overall_mean - overall_se, ymax = overall_mean + overall_se), colour = NA, alpha = 0.5) +
+  xlim(c(0, 100 * 108))
+#ggsave("nb201.png", plot = g, width = 15, height = 5)
 
-results[latency < nb1$niche_boundaries$latency[2L],  best_n1 := min(val_loss), by = .(method, repl)]
-results[latency < nb2$niche_boundaries$latency[2L],  best_n2 := min(val_loss), by = .(method, repl)]
-results[latency < nb3$niche_boundaries$latency[2L],  best_n3 := min(val_loss), by = .(method, repl)]
-results[latency < nb4$niche_boundaries$latency[2L],  best_n4 := min(val_loss), by = .(method, repl)]
-results[latency < nb5$niche_boundaries$latency[2L],  best_n5 := min(val_loss), by = .(method, repl)]
+results[, max_cumbudget := max(cumbudget), by = .(method, repl)]
+results_na = results[cumbudget == max_cumbudget, .(niche_missing = (incumbent == 100)), by = .(method, repl, niche)]
 
-agg = results[, .(niche1 = mean(best_n1, na.rm = TRUE), niche2 = mean(best_n2, na.rm = TRUE), niche3 = mean(best_n3, na.rm = TRUE), niche4 = mean(best_n4, na.rm = TRUE), niche5 = mean(best_n5, na.rm = TRUE)), by = .(method)]
-
-results_na = results[, .(n1_missing = all(is.na(best_n1)), n2_missing = all(is.na(best_n2)), n3_missing = all(is.na(best_n3)), n4_missing = all(is.na(best_n4)), n5_missing = all(is.na(best_n5))), by = .(method, repl)]
-
-results_na_agg = results_na[, .(mean_n1_missing = mean(n1_missing), mean_n2_missing = mean(n2_missing), mean_n3_missing = mean(n3_missing), mean_n4_missing = mean(n4_missing), mean_n5_missing = mean(n5_missing)), by = .(method)]
+results_na_agg = results_na[, .(mean_missing = mean(niche_missing), se_missing = sd(niche_missing) / sqrt(.N)), by = .(method, niche)]
 
