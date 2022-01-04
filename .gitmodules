@@ -1,12 +1,12 @@
 [submodule "mlr3mbo"]
 	path = mlr3mbo
-	url = git@github.com:sumny/mlr3mbo
+	url = https://github.com/sumny/mlr3mbo.git
 [submodule "bbotk"]
 	path = bbotk
-	url = git@github.com:sumny/bbotk
+	url = https://github.com/sumny/bbotk.git
 [submodule "naszilla"]
 	path = naszilla
-	url = git@github.com:sumny/naszilla
+	url = https://github.com/sumny/naszilla.git
 [submodule "multi-obj-baselines"]
 	path = multi-obj-baselines
-	url = git@github.com:sumny/multi-obj-baselines
+	url = https://github.com/sumny/multi-obj-baselines.git
