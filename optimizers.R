@@ -51,7 +51,7 @@ bop_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ejie
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -120,7 +120,7 @@ parego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss, y_col = "y_scal"), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ei
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -189,7 +189,7 @@ smsego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = sms
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -240,7 +240,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -312,7 +312,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -357,7 +357,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = 10L
+  repls = 100L
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
