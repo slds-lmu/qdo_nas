@@ -275,7 +275,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   dataset = as.character(instance$instance)
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
@@ -341,7 +341,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   dataset = as.character(instance$instance)
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
