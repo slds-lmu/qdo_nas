@@ -352,7 +352,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     stop("Not supported.")
   }
 
-  optimizer = OptimizerHBQDO$new()
+  optimizer = OptimizerHyperbandQDO$new()
   optimizer$param_set$values$eta = 3
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
