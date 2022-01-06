@@ -76,5 +76,5 @@ for (i in seq_len(nrow(optimizers))) {
 # walltime estimate: ~ 5000 for 100 repls (default)
 
 jobs = findJobs()
-resources.serial.default = list(memory = 16384L, walltime = 1000L, ntasks = 1L, ncpus = 1L, nodes = 1L)
+resources.serial.default = list(memory = 16384L, walltime = 3600L * 24L, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
