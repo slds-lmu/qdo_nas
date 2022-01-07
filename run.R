@@ -78,3 +78,16 @@ for (i in seq_len(nrow(optimizers))) {
 jobs = findJobs()
 resources.serial.default = list(memory = 16384L, walltime = 3600L * 24L, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
+
+done = findDone()
+results = reduceResultsList(done, function(x, job) {
+  tmp = x
+  tmp[, method := job$pars$algo.pars$algorithm]
+  tmp[, scenario := job$instance$scenario]
+  tmp[, instance := job$instance$instance]
+  tmp[, niches := job$instance$niches]
+  tmp
+})
+results = rbindlist(results, fill = TRUE)
+saveRDS(results, "results.rds")
+

@@ -254,6 +254,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     instance$archive$data[, epoch := fullbudget]
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "random"]
+    tmp[, repl := r]
     tmp
   })
 }
