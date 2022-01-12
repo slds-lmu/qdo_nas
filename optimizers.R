@@ -29,7 +29,13 @@ bop_wrapper = function(job, data, instance, ...) {
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
-    nb = switch(as.character(instance$niches), "small" = nb201_small_nb, "medium" = nb201_medium_nb, "large" = nb201_large_nb)
+    nb = if (dataset == "cifar10") {
+      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
+    } else if (dataset == "cifar100") {
+      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
+    } else if (dataset == "imagenet") {
+      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
+    }
     instance = make_nb201_qdo(ss, nb = nb, n_evals = 100L)
   }
 
@@ -52,12 +58,14 @@ bop_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = ejie
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
     instance$eval_batch(design)
     bayesopt_bop(instance, acq_function = ejie, acq_optimizer = acq_optimizer, sampler = NASSampler$new(ss = ss))
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     instance$archive$data[, epoch := fullbudget]
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bop"]
@@ -97,7 +105,13 @@ parego_wrapper = function(job, data, instance, ...) {
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
-    nb = switch(as.character(instance$niches), "small" = nb201_small_nb, "medium" = nb201_medium_nb, "large" = nb201_large_nb)
+    nb = if (dataset == "cifar10") {
+      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
+    } else if (dataset == "cifar100") {
+      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
+    } else if (dataset == "imagenet") {
+      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
+    }
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
@@ -121,12 +135,14 @@ parego_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = ei
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
     instance$eval_batch(design)
     bayesopt_parego(instance, acq_function = ei, acq_optimizer = acq_optimizer, sampler = NASSampler$new(ss = ss))
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
@@ -167,7 +183,13 @@ smsego_wrapper = function(job, data, instance, ...) {
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
-    nb = switch(as.character(instance$niches), "small" = nb201_small_nb, "medium" = nb201_medium_nb, "large" = nb201_large_nb)
+    nb = if (dataset == "cifar10") {
+      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
+    } else if (dataset == "cifar100") {
+      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
+    } else if (dataset == "imagenet") {
+      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
+    }
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
@@ -190,12 +212,14 @@ smsego_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = sms
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
     instance$eval_batch(design)
     bayesopt_smsego(instance, acq_function = sms, acq_optimizer = acq_optimizer, sampler = NASSampler$new(ss = ss))
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
@@ -236,11 +260,18 @@ random_search_wrapper = function(job, data, instance, ...) {
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
-    nb = switch(as.character(instance$niches), "small" = nb201_small_nb, "medium" = nb201_medium_nb, "large" = nb201_large_nb)
+    nb = if (dataset == "cifar10") {
+      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
+    } else if (dataset == "cifar100") {
+      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
+    } else if (dataset == "imagenet") {
+      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
+    }
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
@@ -250,6 +281,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     for (i in seq_len(NROW(points))) {
       instance$eval_batch(points[i, ])
     }
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
@@ -314,10 +346,12 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$repeats = TRUE
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bohb"]
     tmp[, repl := r]
@@ -359,10 +393,12 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$repeats = TRUE
 
   repls = 100L
+  pareto = vector("list", length = repls)
   map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
+    pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "hb"]
     tmp[, repl := r]
