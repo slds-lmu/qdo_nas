@@ -59,7 +59,7 @@ bop_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -72,6 +72,7 @@ bop_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
 parego_wrapper = function(job, data, instance, ...) {
@@ -136,7 +137,7 @@ parego_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -150,6 +151,7 @@ parego_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
 smsego_wrapper = function(job, data, instance, ...) {
@@ -213,7 +215,7 @@ smsego_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -227,6 +229,7 @@ smsego_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
 random_search_wrapper = function(job, data, instance, ...) {
@@ -272,7 +275,7 @@ random_search_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     points = map_dtr(seq_len(instance$terminator$param_set$values$n_evals), function(i) {
@@ -289,6 +292,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
 bohb_qdo_wrapper = function(job, data, instance, ...) {
@@ -347,7 +351,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
@@ -357,6 +361,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
 hb_qdo_wrapper = function(job, data, instance, ...) {
@@ -394,7 +399,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
 
   repls = 100L
   pareto = vector("list", length = repls)
-  map_dtr(seq_len(repls), function(r) {
+  res = map_dtr(seq_len(repls), function(r) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
@@ -404,5 +409,6 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     tmp[, repl := r]
     tmp
   })
+  list(res = res, pareto = pareto)
 }
 
