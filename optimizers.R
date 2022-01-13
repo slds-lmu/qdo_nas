@@ -58,8 +58,8 @@ bop_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = ejie
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -70,8 +70,8 @@ bop_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bop"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
@@ -136,8 +136,8 @@ parego_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = ei
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -149,8 +149,8 @@ parego_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "parego"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
@@ -214,8 +214,8 @@ smsego_wrapper = function(job, data, instance, ...) {
   acq_optimizer$acq_function = sms
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     design = map_dtr(1:10, function(i) data.table(arch = list(ss$get_cell()$random_cell(ss$nasbench, "adj"))))
@@ -227,8 +227,8 @@ smsego_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "smsego"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
@@ -274,8 +274,8 @@ random_search_wrapper = function(job, data, instance, ...) {
   }
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     points = map_dtr(seq_len(instance$terminator$param_set$values$n_evals), function(i) {
@@ -290,8 +290,8 @@ random_search_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "random"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
@@ -350,8 +350,8 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$repeats = TRUE
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
@@ -359,8 +359,8 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bohb"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
@@ -398,8 +398,8 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$repeats = TRUE
 
   repls = 100L
-  pareto = vector("list", length = repls)
-  res = map_dtr(seq_len(repls), function(r) {
+  pareto = res = vector("list", length = repls)
+  for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
@@ -407,8 +407,8 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "hb"]
     tmp[, repl := r]
-    tmp
-  })
+    res[[r]] = tmp
+  }
   list(res = res, pareto = pareto)
 }
 
