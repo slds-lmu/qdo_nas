@@ -75,13 +75,14 @@ for (i in seq_len(nrow(optimizers))) {
 
 # walltime estimate: ~ 5000 for 100 repls (default)
 
+# FIXME: ram for nb101 vs nb201
 jobs = findJobs()
 resources.serial.default = list(memory = 16384L, walltime = 3600L * 24L, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
 done = findDone()
 results = reduceResultsList(done, function(x, job) {
-  tmp = x
+  tmp = rbindlist(x$res)
   tmp[, method := job$pars$algo.pars$algorithm]
   tmp[, scenario := job$instance$scenario]
   tmp[, instance := job$instance$instance]
@@ -90,4 +91,11 @@ results = reduceResultsList(done, function(x, job) {
 })
 results = rbindlist(results, fill = TRUE)
 saveRDS(results, "results.rds")
+
+pareto = reduceResultsList(done, function(x, job) {
+  tmp = emoa::nondominated_points(do.call(cbind, x$pareto))
+  data.table(pareto = list(tmp), method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches)
+})
+pareto = rbindlist(pareto, fill = TRUE)
+saveRDS(pareto, "pareto.rds")
 

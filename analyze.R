@@ -22,3 +22,15 @@ ggplot(aes(x = method, y = mean_missing, fill = niche), data = results_na_agg) +
   geom_bar(stat = "identity") +
   facet_wrap(~ scenario + instance + niches, scales = "free")
 
+pareto = readRDS("pareto.rds")
+x = pareto[method == "parego" & scenario == "nb101" & instance == "cifar10" & niches == "small"]
+y = pareto[method == "smsego" & scenario == "nb101" & instance == "cifar10" & niches == "small"]
+z = pareto[method == "random_search" & scenario == "nb101" & instance == "cifar10" & niches == "small"]
+plot(x$pareto[[1L]][1L, ], x$pareto[[1L]][2L, ], col = "red", pch = 19)
+points(y$pareto[[1L]][1L, ], y$pareto[[1L]][2L, ], col = "green", pch = 19)
+points(z$pareto[[1L]][1L, ], z$pareto[[1L]][2L, ], col = "grey", pch = 19)
+
+ref = t(c(100, 20))
+emoa::dominated_hypervolume(x$pareto[[1L]], ref)
+emoa::dominated_hypervolume(y$pareto[[1L]], ref)
+emoa::dominated_hypervolume(z$pareto[[1L]], ref)
