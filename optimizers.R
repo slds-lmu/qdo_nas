@@ -25,7 +25,7 @@ bop_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, imagenet
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 200L
+    fullbudget = 12L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -102,7 +102,7 @@ parego_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 200L
+    fullbudget = 12L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -181,7 +181,7 @@ smsego_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 200L
+    fullbudget = 12L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -259,7 +259,7 @@ random_search_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 200L
+    fullbudget = 12L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L

@@ -74,10 +74,8 @@ for (i in seq_len(nrow(optimizers))) {
 }
 
 # walltime estimate: ~ 5000 for 100 repls (default)
-
-# FIXME: ram for nb101 vs nb201
-jobs = findJobs()
-resources.serial.default = list(memory = 16384L, walltime = 3600L * 24L, ntasks = 1L, ncpus = 1L, nodes = 1L)
+jobs = findJobs()  # FIXME: 16 GB nb101 32 GB nb201
+resources.serial.default = list(walltime = 3600L * 24L, memory = 32000, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
 done = findDone()
