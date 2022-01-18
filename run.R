@@ -36,6 +36,8 @@ addAlgorithm("smsego", fun = smsego_wrapper)
 addAlgorithm("random_search", fun = random_search_wrapper)
 addAlgorithm("bohb_qdo", fun = bohb_qdo_wrapper)
 addAlgorithm("hb_qdo", fun = hb_qdo_wrapper)
+addAlgorithm("bohb_mo", fun = bohb_mo_wrapper)
+addAlgorithm("hb_mo", fun = hb_mo_wrapper)
 
 # setup scenarios and instances
 nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"))
@@ -46,7 +48,7 @@ setup[, id := seq_len(.N)]
 # add problems
 prob_designs = map(seq_len(nrow(setup)), function(i) {
   prob_id = paste0(setup[i, ]$scenario, "_", setup[i, ]$instance, "_", paste0(setup[i, ]$niches, collapse = "_"))
-  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches))
+  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches, repls = 1L))  # FIXME:
   setNames(list(setup[i, ]), nm = prob_id)
 })
 nn = sapply(prob_designs, names)
@@ -54,19 +56,13 @@ prob_designs = unlist(prob_designs, recursive = FALSE, use.names = FALSE)
 names(prob_designs) = nn
 
 # add jobs for optimizers
-optimizers = data.table(algorithm = c("bop", "parego", "smsego", "random_search", "bohb_qdo", "hb_qdo"))
+optimizers = data.table(algorithm = c("bop", "parego", "smsego", "random_search", "bohb_qdo", "hb_qdo", "bohb_mo", "hb_mo"))
 
 for (i in seq_len(nrow(optimizers))) {
   algo_designs = setNames(list(optimizers[i, ]), nm = optimizers[i, ]$algorithm)
 
-  probdesigns = if (optimizers[i, ]$algorithm %in% c("bohb_qdo", "hb_qdo")) {
-    prob_designs[!grepl("nb201", x = names(prob_designs))]
-  } else {
-    prob_designs
-  }
-    
   ids = addExperiments(
-    prob.designs = probdesigns,
+    prob.designs = prob_designs,
     algo.designs = algo_designs,
     repls = 1L
   )
