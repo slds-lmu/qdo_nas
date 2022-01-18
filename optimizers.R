@@ -492,14 +492,14 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   surrogate$y_cols = "y_scal"
   surrogate$x_cols = paste0("P", 1:n_paths)
   surrogate$archive = instance$archive
-  
+
   ei = AcqFunctionEI$new(surrogate)
   ei$domain$trafo = function(x, param_set) {
     cell = ss$get_cell(x$arch)
     path = as.integer(py_to_r(cell$encode("trunc_path")))
     as.data.table(setNames(as.list(path), paste0("P", 1:n_paths)))
   }
-  
+
   # setting "y_scal" is needed for OptimizerNAS to know which column to select
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss, y_col = "y_scal"), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ei
