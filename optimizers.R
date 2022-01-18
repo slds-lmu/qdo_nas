@@ -13,6 +13,7 @@ bop_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101()
@@ -57,7 +58,6 @@ bop_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ejie
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -90,6 +90,7 @@ parego_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101()
@@ -135,7 +136,6 @@ parego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss, y_col = "y_scal"), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ei
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -169,6 +169,7 @@ smsego_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101()
@@ -213,7 +214,6 @@ smsego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = sms
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -247,6 +247,7 @@ random_search_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101()
@@ -273,7 +274,6 @@ random_search_wrapper = function(job, data, instance, ...) {
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -310,6 +310,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
@@ -364,7 +365,6 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -394,6 +394,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
@@ -427,7 +428,6 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -457,6 +457,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
@@ -511,7 +512,6 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
@@ -542,6 +542,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  repls = instance$repls
 
   if (scenario == "nb101") {
     ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
@@ -575,7 +576,6 @@ hb_mo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  repls = instance$repls
   pareto = res = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
