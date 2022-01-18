@@ -39,16 +39,18 @@ addAlgorithm("hb_qdo", fun = hb_qdo_wrapper)
 addAlgorithm("bohb_mo", fun = bohb_mo_wrapper)
 addAlgorithm("hb_mo", fun = hb_mo_wrapper)
 
+repls = 1L
+
 # setup scenarios and instances
-nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"))
-nb201 = expand.grid(scenario = "nb201", instance = c("cifar10", "cifar100", "imagenet"), niches = c("small", "medium", "large"))
+nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"), repls = repls)
+nb201 = expand.grid(scenario = "nb201", instance = c("cifar10", "cifar100", "imagenet"), niches = c("small", "medium", "large"), repls = repls)
 setup = setDT(rbind(nb101, nb201))
 setup[, id := seq_len(.N)]
 
 # add problems
 prob_designs = map(seq_len(nrow(setup)), function(i) {
   prob_id = paste0(setup[i, ]$scenario, "_", setup[i, ]$instance, "_", paste0(setup[i, ]$niches, collapse = "_"))
-  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches, repls = 1L))  # FIXME:
+  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches, repls = repls))
   setNames(list(setup[i, ]), nm = prob_id)
 })
 nn = sapply(prob_designs, names)
@@ -70,8 +72,13 @@ for (i in seq_len(nrow(optimizers))) {
 }
 
 # walltime estimate: ~ 5000 for 100 repls (default)
-jobs = findJobs()  # FIXME: 16 GB nb101 32 GB nb201
-resources.serial.default = list(walltime = 3600L * 24L, memory = 32000, ntasks = 1L, ncpus = 1L, nodes = 1L)
+tab = getJobTable()
+jobs = tab[grepl("nb101", x = problem), "job.id", with = FALSE]
+resources.serial.default = list(walltime = 3600L * 24L, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
+submitJobs(jobs, resources = resources.serial.default)
+
+jobs = tab[grepl("nb201", x = problem), "job.id", with = FALSE]
+resources.serial.default = list(walltime = 3600L * 24L, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
 done = findDone()
