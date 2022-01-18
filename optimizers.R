@@ -349,7 +349,6 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   
   ejie = AcqFunctionEJIE$new(surrogate, niches = nb, worst = 100)
   ejie$domain$trafo = function(x, param_set) {
-    browser()
     cell = ss$get_cell(x$arch)
     path = as.integer(py_to_r(cell$encode("trunc_path")))
     as.data.table(setNames(as.list(path), paste0("P", 1:n_paths)))
