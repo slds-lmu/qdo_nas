@@ -1,5 +1,5 @@
 # nb101
-# num_params on log scale
+# num_params
 #import nasbench.api
 #import numpy as np
 #ss = nasbench.api.NASBench("naszilla/nas_benchmark_datasets/nasbench_only108.tfrecord")
@@ -12,27 +12,27 @@
 #np.quantile(num_params, 0.5)
 #np.quantile(num_params, [0.01, 0.05, 0.1, 0.3])
 #np.quantile(num_params, [0.01, 0.02, 0.5, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7])
-nb101_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = log(c(0, 5356682))))
-nb101_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = log(c(5356682, Inf))))
+nb101_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = c(0, 5356682)))
+nb101_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = c(5356682, Inf)))
 nb101_small_nb = NichesBoundaries$new("nb101_small", niches_boundaries = list(niche1 = nb101_small_n1, niche2 = nb101_small_n2))
 
-nb101_medium_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = log(c(0, 650520))))
-nb101_medium_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = log(c(650520, 1227914))))
-nb101_medium_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(num_params = log(c(1227914, 1664778))))
-nb101_medium_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(num_params = log(c(1664778, 3468426))))
-nb101_medium_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(num_params = log(c(3468426, Inf))))
+nb101_medium_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = c(0, 650520)))
+nb101_medium_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = c(650520, 1227914)))
+nb101_medium_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(num_params = c(1227914, 1664778)))
+nb101_medium_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(num_params = c(1664778, 3468426)))
+nb101_medium_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(num_params = c(3468426, Inf)))
 nb101_medium_nb = NichesBoundaries$new("nb101_medium", niches_boundaries = list(niche1 = nb101_medium_n1, niche2 = nb101_medium_n2, niche3 = nb101_medium_n3, niche4 = nb101_medium_n4, niche5 = nb101_medium_n5))
 
-nb101_large_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = log(c(0, 650520))))
-nb101_large_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = log(c(650520, 824848))))
-nb101_large_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(num_params = log(c(824848, 1227914))))
-nb101_large_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(num_params = log(c(1227914, 1664778))))
-nb101_large_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(num_params = log(c(1664778, 2538506))))
-nb101_large_n6 = NicheBoundaries$new("niche6", niche_boundaries = list(num_params = log(c(2538506, 3468426))))
-nb101_large_n7 = NicheBoundaries$new("niche7", niche_boundaries = list(num_params = log(c(3468426, 3989898))))
-nb101_large_n8 = NicheBoundaries$new("niche8", niche_boundaries = list(num_params = log(c(3989898, 5356682))))
-nb101_large_n9 = NicheBoundaries$new("niche9", niche_boundaries = list(num_params = log(c(5356682, 8118666))))
-nb101_large_n10 = NicheBoundaries$new("niche10", niche_boundaries = list(num_params = log(c(8118666, Inf))))
+nb101_large_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = c(0, 650520)))
+nb101_large_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = c(650520, 824848)))
+nb101_large_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(num_params = c(824848, 1227914)))
+nb101_large_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(num_params = c(1227914, 1664778)))
+nb101_large_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(num_params = c(1664778, 2538506)))
+nb101_large_n6 = NicheBoundaries$new("niche6", niche_boundaries = list(num_params = c(2538506, 3468426)))
+nb101_large_n7 = NicheBoundaries$new("niche7", niche_boundaries = list(num_params = c(3468426, 3989898)))
+nb101_large_n8 = NicheBoundaries$new("niche8", niche_boundaries = list(num_params = c(3989898, 5356682)))
+nb101_large_n9 = NicheBoundaries$new("niche9", niche_boundaries = list(num_params = c(5356682, 8118666)))
+nb101_large_n10 = NicheBoundaries$new("niche10", niche_boundaries = list(num_params = c(8118666, Inf)))
 nb101_large_nb = NichesBoundaries$new("nb101_large", niches_boundaries = list(niche1 = nb101_large_n1, niche2 = nb101_large_n2, niche3 = nb101_large_n3, niche4 = nb101_large_n4, niche5 = nb101_large_n5, niche6 = nb101_large_n6, niche7 = nb101_large_n7, niche8 = nb101_large_n8, niche9 = nb101_large_n9, niche10 = nb101_large_n10))
 
 # nb201
