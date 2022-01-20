@@ -344,7 +344,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   learner = ranger
   surrogate = default_surrogate(instance, learner = learner, n_learner = 2L)
   surrogate$y_cols = c(y_var, feature_var)
-  surrogate$x_cols = paste0("P", 1:n_paths)
+  surrogate$x_cols = c(paste0("P", 1:n_paths), "epoch")
   surrogate$archive = instance$archive
   
   ejie = AcqFunctionEJIE$new(surrogate, niches = nb, worst = 100)
@@ -490,7 +490,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   learner = ranger
   surrogate = default_surrogate(instance, learner = learner, n_learner = 1L)
   surrogate$y_cols = "y_scal"
-  surrogate$x_cols = paste0("P", 1:n_paths)
+  surrogate$x_cols = c(paste0("P", 1:n_paths), "epoch")
   surrogate$archive = instance$archive
 
   ei = AcqFunctionEI$new(surrogate)
