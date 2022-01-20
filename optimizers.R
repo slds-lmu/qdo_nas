@@ -344,7 +344,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   learner = ranger
   surrogate = default_surrogate(instance, learner = learner, n_learner = 2L)
   surrogate$y_cols = c(y_var, feature_var)
-  surrogate$x_cols = paste0("P", 1:n_paths)
+  surrogate$x_cols = c(paste0("P", 1:n_paths), "epoch")
   surrogate$archive = instance$archive
   
   ejie = AcqFunctionEJIE$new(surrogate, niches = nb, worst = 100)
@@ -371,7 +371,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "bohb"]
+    tmp[, method := "bohb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -434,7 +434,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "hb"]
+    tmp[, method := "hb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -490,7 +490,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   learner = ranger
   surrogate = default_surrogate(instance, learner = learner, n_learner = 1L)
   surrogate$y_cols = "y_scal"
-  surrogate$x_cols = paste0("P", 1:n_paths)
+  surrogate$x_cols = c(paste0("P", 1:n_paths), "epoch")
   surrogate$archive = instance$archive
 
   ei = AcqFunctionEI$new(surrogate)
