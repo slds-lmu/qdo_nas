@@ -371,7 +371,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "bohb"]
+    tmp[, method := "bohb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -434,7 +434,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "hb"]
+    tmp[, method := "hb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }

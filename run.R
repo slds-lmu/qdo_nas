@@ -39,7 +39,7 @@ addAlgorithm("hb_qdo", fun = hb_qdo_wrapper)
 addAlgorithm("bohb_mo", fun = bohb_mo_wrapper)
 addAlgorithm("hb_mo", fun = hb_mo_wrapper)
 
-repls = 1L
+repls = 100L
 
 # setup scenarios and instances
 nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"), repls = repls)
