@@ -336,7 +336,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
-    eta = 2
+    eta = 3
   }
 
   ranger = lrn("regr.ranger")
@@ -419,7 +419,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
-    eta = 2
+    eta = 3
   }
 
   optimizer = OptimizerHyperbandQDO$new()
@@ -482,7 +482,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
-    eta = 2
+    eta = 3
   }
 
   ranger = lrn("regr.ranger")
@@ -567,7 +567,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
-    eta = 2
+    eta = 3
   }
 
   optimizer = OptimizerHyperbandMO$new()
