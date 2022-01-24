@@ -357,7 +357,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ejie
 
-  optimizer = OptimizerBOHBQDO$new()
+  optimizer = OptimizerBOHBQDO$new(niches = nb)
   optimizer$param_set$values$eta = eta
   optimizer$param_set$values$acq_function = ejie
   optimizer$param_set$values$acq_optimizer = acq_optimizer
@@ -422,7 +422,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     eta = 3
   }
 
-  optimizer = OptimizerHyperbandQDO$new()
+  optimizer = OptimizerHyperbandQDO$new(niches = nb)
   optimizer$param_set$values$eta = eta
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE

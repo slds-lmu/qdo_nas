@@ -100,7 +100,7 @@ make_nb101_qdo = function(ss, nb, n_evals = 100L) {
     codomain = ParamSet$new(list(
       ParamDbl$new("val_loss", tags = "minimize"),
       ParamDbl$new("num_params", tags = "feature"),
-      ParamFct$new("niche", levels = niches, special_vals = list(NA_character_), tags = "niche"))
+      ParamUty$new("niche", tags = "niche"))
     ),
     properties = "single-crit",
     id = "nb101_qdo",
@@ -142,7 +142,7 @@ make_nb101_qdo_mf = function(ss, nb, maxbudget = 100L * 108L) {
     codomain = ParamSet$new(list(
       ParamDbl$new("val_loss", tags = "minimize"),
       ParamDbl$new("num_params", tags = "feature"),
-      ParamFct$new("niche", levels = niches, special_vals = list(NA_character_), tags = "niche"))
+      ParamUty$new("niche", tags = "niche"))
     ),
     properties = "single-crit",
     id = "nb101_qdo_mf",
@@ -260,7 +260,7 @@ make_nb201_qdo = function(ss, nb, n_evals = 100L) {
     codomain = ParamSet$new(list(
       ParamDbl$new("val_loss", tags = "minimize"),
       ParamDbl$new("latency", tags = "feature"),
-      ParamFct$new("niche", levels = niches, special_vals = list(NA_character_), tags = "niche"))
+      ParamUty$new("niche", tags = "niche"))
     ),
     properties = "single-crit",
     id = "nb201_qdo",
@@ -302,7 +302,7 @@ make_nb201_qdo_mf = function(ss, nb, maxbudget = 100L * 12L) {
     codomain = ParamSet$new(list(
       ParamDbl$new("val_loss", tags = "minimize"),
       ParamDbl$new("latency", tags = "feature"),
-      ParamFct$new("niche", levels = niches, special_vals = list(NA_character_), tags = "niche"))
+      ParamUty$new("niche", tags = "niche"))
     ),
     properties = "single-crit",
     id = "nb201_qdo_mf",

@@ -1,5 +1,5 @@
 # Custom sampler for architectures
-# FIXME: document and cleanup
+# FIXME: document
 NASSampler = R6Class("NASSampler",
   public = list(
     ss = NULL,
@@ -22,6 +22,7 @@ NASSampler = R6Class("NASSampler",
   )
 )
 
+# Optimizer used as acquisition function optimizer, mimics what is done in mutation in BANANAS
 # FIXME: document
 OptimizerNAS = R6Class("OptimizerNAS",
   inherit = Optimizer,
@@ -78,6 +79,8 @@ get_test_loss = function(arch, ss) {
 
 cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", worst = 100) {
   data = copy(archive$data)
+  data[, iter := seq_len(.N)]
+  data[, cumbudget := cumsum(data[[budget_var]])]
 
   if ("x_domain" %in% names(data)) {
     data = data[, x_domain := NULL]  # FIXME: cannot properly recycle NULL x_domain
@@ -85,7 +88,6 @@ cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", wor
   data$orig = seq_len(NROW(data))
   data = data[, lapply(.SD, unlist), by = orig]
   data[, orig := NULL]
-  data[, iter := seq_len(.N)]
 
   max_to_min = mult_max_to_min(archive$codomain)
   y_ids = if (is.null(y_var)) {
@@ -96,7 +98,7 @@ cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", wor
 
   niches_ids = map_chr(nb$niches, "id")
 
-  res = map_dtr(data$iter, function(i) {
+  res = map_dtr(unique(data$iter), function(i) {
     tmp = data[iter <= i, ]
     res = tmp[, .(incumbent = cummin(get(y_ids))), by = .(niche)]
     res = res[, .(incumbent = min(incumbent)), by = .(niche)]
@@ -104,7 +106,8 @@ cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", wor
       res = rbind(res, data.table(niche = nid, incumbent = worst))
     }
     res[, iter := i]
-    res[, cumbudget := sum(tmp[[budget_var]])]
+    stopifnot(length(unique(data[iter == i]$cumbudget)) == 1L)
+    res[, cumbudget := data[iter == i]$cumbudget[1L]]
     res
   }, .fill = TRUE)
   res
