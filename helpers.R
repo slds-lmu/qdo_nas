@@ -77,10 +77,11 @@ get_test_loss = function(arch, ss) {
   data.table(test_loss = py_to_r(cell$get_test_loss(ss$nasbench)))
 }
 
-cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", worst = 100) {
+cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", time_var = "runtime", worst = 100) {
   data = copy(archive$data)
   data[, iter := seq_len(.N)]
   data[, cumbudget := cumsum(data[[budget_var]])]
+  data[, cumtime := cumsum(data[[time_var]])]
 
   if ("x_domain" %in% names(data)) {
     data = data[, x_domain := NULL]  # FIXME: cannot properly recycle NULL x_domain
@@ -108,6 +109,8 @@ cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", wor
     res[, iter := i]
     stopifnot(length(unique(data[iter == i]$cumbudget)) == 1L)
     res[, cumbudget := data[iter == i]$cumbudget[1L]]
+    stopifnot(length(unique(data[iter == i]$cumtime)) == 1L)
+    res[, cumtime := data[iter == i]$cumtime[1L]]
     res
   }, .fill = TRUE)
   res
