@@ -18,7 +18,7 @@ results[, max_cumbudget := max(cumbudget), by = .(method, repl, scenario, instan
 results_na = results[cumbudget == max_cumbudget, .(niche_missing = (incumbent == 100)), by = .(method, repl, niche, scenario, instance, niches)]
 results_na_agg = results_na[, .(mean_missing = mean(niche_missing), se_missing = sd(niche_missing) / sqrt(.N)), by = .(method, niche, scenario, instance, niches)]
 
-ggplot(aes(x = method, y = mean_missing, fill = niche), data = results_na_agg) +
+g = ggplot(aes(x = method, y = mean_missing, fill = niche), data = results_na_agg) +
   geom_bar(stat = "identity") +
   facet_wrap(~ scenario + instance + niches, scales = "free")
 
