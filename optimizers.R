@@ -16,7 +16,7 @@ bop_wrapper = function(job, data, instance, ...) {
   repls = instance$repls
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
@@ -58,7 +58,7 @@ bop_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ejie
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
@@ -67,12 +67,14 @@ bop_wrapper = function(job, data, instance, ...) {
     bayesopt_bop(instance, acq_function = ejie, acq_optimizer = acq_optimizer, sampler = NASSampler$new(ss = ss))
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     instance$archive$data[, epoch := fullbudget]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bop"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 parego_wrapper = function(job, data, instance, ...) {
@@ -93,7 +95,7 @@ parego_wrapper = function(job, data, instance, ...) {
   repls = instance$repls
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
@@ -136,7 +138,7 @@ parego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss, y_col = "y_scal"), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = ei
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
@@ -146,12 +148,14 @@ parego_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "parego"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 smsego_wrapper = function(job, data, instance, ...) {
@@ -172,7 +176,7 @@ smsego_wrapper = function(job, data, instance, ...) {
   repls = instance$repls
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
@@ -214,7 +218,7 @@ smsego_wrapper = function(job, data, instance, ...) {
   acq_optimizer = AcqOptimizer$new(OptimizerNAS$new(ss = ss), terminator = trm("none"))  # OptimizerNAS terminates on its own
   acq_optimizer$acq_function = sms
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
@@ -224,12 +228,14 @@ smsego_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "smsego"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 random_search_wrapper = function(job, data, instance, ...) {
@@ -250,7 +256,7 @@ random_search_wrapper = function(job, data, instance, ...) {
   repls = instance$repls
 
   if (scenario == "nb101") {
-    ss = naszilla$nas_benchmarks$Nasbench101()
+    ss = naszilla$nas_benchmarks$Nasbench101(mf = TRUE)
     fullbudget = 108L
     y_var = "val_loss"
     feature_var = "num_params"
@@ -274,7 +280,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     instance = make_nb201_moo(ss, n_evals = 100L)
   }
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
@@ -287,12 +293,14 @@ random_search_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "random"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 bohb_qdo_wrapper = function(job, data, instance, ...) {
@@ -364,18 +372,20 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bohb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 hb_qdo_wrapper = function(job, data, instance, ...) {
@@ -427,18 +437,20 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "hb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 bohb_mo_wrapper = function(job, data, instance, ...) {
@@ -511,19 +523,21 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "bohb_mo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 
 hb_mo_wrapper = function(job, data, instance, ...) {
@@ -575,18 +589,20 @@ hb_mo_wrapper = function(job, data, instance, ...) {
   optimizer$param_set$values$sampler = NASSampler$new(ss = ss)
   optimizer$param_set$values$repeats = TRUE
 
-  pareto = res = vector("list", length = repls)
+  pareto = res = data = best = vector("list", length = repls)
   for (r in seq_len(repls)) {
     set.seed(r)
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
+    data[[r]] = instance$archive$data
+    best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
     tmp[, method := "hb_mo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
-  list(res = res, pareto = pareto)
+  list(res = res, pareto = pareto, data = data, best = best)
 }
 

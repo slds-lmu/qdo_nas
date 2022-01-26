@@ -12,7 +12,13 @@ make_nb101_moo = function(ss, n_evals = 100L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench)), num_params = py_to_r(cell$get_num_params(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench)),
+          num_params = py_to_r(cell$get_num_params(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench))
+        )
       }))
       tmp = cbind(tmp, rbindlist(xdt$path))
       tmp
@@ -50,7 +56,13 @@ make_nb101_moo_mf = function(ss, maxbudget = 100L * 108L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))), num_params = py_to_r(cell$get_num_params(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          num_params = py_to_r(cell$get_num_params(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
+        ) 
       }))
       tmp = cbind(tmp, rbindlist(xdt$path))
       tmp
@@ -90,7 +102,13 @@ make_nb101_qdo = function(ss, nb, n_evals = 100L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench)), num_params = py_to_r(cell$get_num_params(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench)),
+          num_params = py_to_r(cell$get_num_params(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench))
+        )
       }))
       tmp[, niche := nb$get_niche_dt(tmp[, "num_params"])]
       tmp = cbind(tmp, rbindlist(xdt$path))
@@ -132,7 +150,13 @@ make_nb101_qdo_mf = function(ss, nb, maxbudget = 100L * 108L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))), num_params = py_to_r(cell$get_num_params(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          num_params = py_to_r(cell$get_num_params(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
+        )
       }))
       tmp[, niche := nb$get_niche_dt(tmp[, "num_params"])]
       tmp = cbind(tmp, rbindlist(xdt$path))
@@ -172,7 +196,13 @@ make_nb201_moo = function(ss, n_evals = 100L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench)), latency = py_to_r(cell$get_latency(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench)),
+          latency = py_to_r(cell$get_latency(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench))
+        )
       }))
       tmp = cbind(tmp, rbindlist(xdt$path))
       tmp
@@ -210,7 +240,13 @@ make_nb201_moo_mf = function(ss, maxbudget = 100L * 12L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))), latency = py_to_r(cell$get_latency(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          latency = py_to_r(cell$get_latency(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
+        )
       }))
       tmp = cbind(tmp, rbindlist(xdt$path))
       tmp
@@ -250,7 +286,13 @@ make_nb201_qdo = function(ss, nb, n_evals = 100L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench)), latency = py_to_r(cell$get_latency(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench)),
+          latency = py_to_r(cell$get_latency(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench))
+        )
       }))
       tmp[, niche := nb$get_niche_dt(tmp[, "latency"])]
       tmp = cbind(tmp, rbindlist(xdt$path))
@@ -292,7 +334,13 @@ make_nb201_qdo_mf = function(ss, nb, maxbudget = 100L * 12L) {
       tmp = rbindlist(apply(xdt, MARGIN = 1L, FUN = function(x) {
         arch = x$arch
         cell = ss$get_cell(arch)
-        data.table(val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))), latency = py_to_r(cell$get_latency(ss$nasbench)), cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""))
+        data.table(
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          latency = py_to_r(cell$get_latency(ss$nasbench)),
+          cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
+        )
       }))
       tmp[, niche := nb$get_niche_dt(tmp[, "latency"])]
       tmp = cbind(tmp, rbindlist(xdt$path))
