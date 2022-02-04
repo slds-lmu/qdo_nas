@@ -83,6 +83,7 @@ results = reduceResultsList(done, function(x, job) {
   tmp[, scenario := job$instance$scenario]
   tmp[, instance := job$instance$instance]
   tmp[, niches := job$instance$niches]
+  tmp[, overlapping := job$instance$overlapping]
   tmp
 })
 results = rbindlist(results, fill = TRUE)
@@ -90,7 +91,7 @@ saveRDS(results, "results.rds")
 
 pareto = reduceResultsList(done, function(x, job) {
   tmp = emoa::nondominated_points(do.call(cbind, x$pareto))
-  data.table(pareto = list(tmp), method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches)
+  data.table(pareto = list(tmp), method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches, overlapping = job$instance$overlapping)
 })
 pareto = rbindlist(pareto, fill = TRUE)
 saveRDS(pareto, "pareto.rds")
@@ -101,6 +102,7 @@ best = reduceResultsList(done, function(x, job) {
   tmp[, scenario := job$instance$scenario]
   tmp[, instance := job$instance$instance]
   tmp[, niches := job$instance$niches]
+  tmp[, overlapping := job$instance$overlapping]
   tmp
 })
 best = rbindlist(best, fill = TRUE)

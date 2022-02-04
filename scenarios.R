@@ -60,7 +60,7 @@ make_nb101_moo_mf = function(ss, maxbudget = 100L * 108L) {
           val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
           num_params = py_to_r(cell$get_num_params(ss$nasbench)),
           cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
-          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
           runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
         ) 
       }))
@@ -154,7 +154,7 @@ make_nb101_qdo_mf = function(ss, nb, maxbudget = 100L * 108L) {
           val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch))),
           num_params = py_to_r(cell$get_num_params(ss$nasbench)),
           cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
-          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch))),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench)),
           runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch)))
         )
       }))
@@ -197,11 +197,11 @@ make_nb201_moo = function(ss, n_evals = 100L) {
         arch = x$arch
         cell = ss$get_cell(arch)
         data.table(
-          val_loss = py_to_r(cell$get_val_loss(ss$nasbench), dataset = ss$dataset),
-          latency = py_to_r(cell$get_latency(ss$nasbench), dataset = ss$dataset),
+          val_loss = py_to_r(cell$get_val_loss(ss$nasbench, dataset = ss$dataset)),
+          latency = py_to_r(cell$get_latency(ss$nasbench, dataset = ss$dataset)),
           cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
-          test_loss = py_to_r(cell$get_test_loss(ss$nasbench), dataset = ss$dataset),
-          runtime = py_to_r(cell$get_runtime(ss$nasbench), dataset = ss$dataset)
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, dataset = ss$dataset)),
+          runtime = py_to_r(cell$get_runtime(ss$nasbench, dataset = ss$dataset))
         )
       }))
       tmp = cbind(tmp, rbindlist(xdt$path))
@@ -244,7 +244,7 @@ make_nb201_moo_mf = function(ss, maxbudget = 100L * 200L) {
           val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch), dataset = ss$dataset)),
           latency = py_to_r(cell$get_latency(ss$nasbench, dataset = ss$dataset)),
           cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
-          test_loss = py_to_r(cell$get_test_loss(ss$nasbench), epochs = as.integer(x$epoch), dataset = ss$dataset),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, dataset = ss$dataset)),
           runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch), dataset = ss$dataset))
         )
       }))
@@ -338,7 +338,7 @@ make_nb201_qdo_mf = function(ss, nb, maxbudget = 100L * 200L) {
           val_loss = py_to_r(cell$get_val_loss(ss$nasbench, epochs = as.integer(x$epoch), dataset = ss$dataset)),
           latency = py_to_r(cell$get_latency(ss$nasbench, dataset = ss$dataset)),
           cell_hash = paste0(py_to_r(ss$get_hash(arch)), collapse = ""),
-          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, epochs = as.integer(x$epoch), dataset = ss$dataset)),
+          test_loss = py_to_r(cell$get_test_loss(ss$nasbench, dataset = ss$dataset)),
           runtime = py_to_r(cell$get_runtime(ss$nasbench, epochs = as.integer(x$epoch), dataset = ss$dataset))
         )
       }))
