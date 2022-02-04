@@ -20,7 +20,7 @@ RhpcBLASctl::omp_set_num_threads(1L)
 root = here::here()
 benchmark_dir = file.path(root)
 
-source_files = map_chr(c("helpers.R", "scenarios.R", "niches.R", "optimizers.R"), function(x) file.path(benchmark_dir, x))
+source_files = map_chr(c("helpers.R", "scenarios.R", "optimizers.R"), function(x) file.path(benchmark_dir, x))
 for (sf in source_files) {
   source(sf)
 }
@@ -42,15 +42,15 @@ addAlgorithm("hb_mo", fun = hb_mo_wrapper)
 repls = 100L
 
 # setup scenarios and instances
-nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"), repls = repls)
-nb201 = expand.grid(scenario = "nb201", instance = c("cifar10", "cifar100", "imagenet"), niches = c("small", "medium", "large"), repls = repls)
+nb101 = expand.grid(scenario = "nb101", instance = "cifar10", niches = c("small", "medium", "large"), overlapping = c(TRUE, FALSE), repls = repls)
+nb201 = expand.grid(scenario = "nb201", instance = c("cifar10", "cifar100", "ImageNet16-120"), niches = c("small", "medium", "large"), overlapping = c(TRUE, FALSE), repls = repls)
 setup = setDT(rbind(nb101, nb201))
 setup[, id := seq_len(.N)]
 
 # add problems
 prob_designs = map(seq_len(nrow(setup)), function(i) {
-  prob_id = paste0(setup[i, ]$scenario, "_", setup[i, ]$instance, "_", paste0(setup[i, ]$niches, collapse = "_"))
-  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches, repls = repls))
+  prob_id = paste0(setup[i, ]$scenario, "_", setup[i, ]$instance, "_", setup[i, ]$niches, "_", setup[i, ]$overlapping, collapse = "_")
+  addProblem(prob_id, data = list(scenario = setup[i, ]$scenario, instance = setup[i, ]$instance, niches = setup[i, ]$niches, overlapping = setup[i, ]$overlapping, repls = setup[i, ]$repls))
   setNames(list(setup[i, ]), nm = prob_id)
 })
 nn = sapply(prob_designs, names)
@@ -66,18 +66,13 @@ for (i in seq_len(nrow(optimizers))) {
   ids = addExperiments(
     prob.designs = prob_designs,
     algo.designs = algo_designs,
-    repls = 1L
+    repls = 1L  # actual repls are handled within
   )
   addJobTags(ids, as.character(optimizers[i, ]$algorithm))
 }
 
 # walltime estimate: ~ 5000 for 100 repls (default)
-tab = getJobTable()
-jobs = tab[grepl("nb101", x = problem), "job.id", with = FALSE]
-resources.serial.default = list(walltime = 3600L * 24L, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
-submitJobs(jobs, resources = resources.serial.default)
-
-jobs = tab[grepl("nb201", x = problem), "job.id", with = FALSE]
+jobs = findJobs()
 resources.serial.default = list(walltime = 3600L * 24L, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
@@ -99,4 +94,15 @@ pareto = reduceResultsList(done, function(x, job) {
 })
 pareto = rbindlist(pareto, fill = TRUE)
 saveRDS(pareto, "pareto.rds")
+
+best = reduceResultsList(done, function(x, job) {
+  tmp = rbindlist(x$best)
+  tmp[, method := job$pars$algo.pars$algorithm]
+  tmp[, scenario := job$instance$scenario]
+  tmp[, instance := job$instance$instance]
+  tmp[, niches := job$instance$niches]
+  tmp
+})
+best = rbindlist(best, fill = TRUE)
+saveRDS(best, "best.rds")
 
