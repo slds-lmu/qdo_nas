@@ -13,6 +13,7 @@ bop_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -26,7 +27,7 @@ bop_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, imagenet
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -67,10 +68,11 @@ bop_wrapper = function(job, data, instance, ...) {
     bayesopt_bop(instance, acq_function = ejie, acq_optimizer = acq_optimizer, sampler = NASSampler$new(ss = ss))
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
     instance$archive$data[, epoch := fullbudget]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "bop"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -92,6 +94,7 @@ parego_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -105,7 +108,7 @@ parego_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -148,10 +151,11 @@ parego_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "parego"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -173,6 +177,7 @@ smsego_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -186,7 +191,7 @@ smsego_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -228,10 +233,11 @@ smsego_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "smsego"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -253,6 +259,7 @@ random_search_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -266,7 +273,7 @@ random_search_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -293,10 +300,11 @@ random_search_wrapper = function(job, data, instance, ...) {
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
     instance$archive$data[, epoch := fullbudget]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "random"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -318,6 +326,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -332,7 +341,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -378,10 +387,11 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "bohb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -403,6 +413,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -417,7 +428,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -443,10 +454,11 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     instance$archive$clear()
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, c(instance$archive$cols_y, instance$archive$cols_g), with = FALSE]))
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "hb_qdo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -468,6 +480,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -482,7 +495,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -530,10 +543,11 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "bohb_mo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
@@ -555,6 +569,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
   repls = instance$repls
 
   if (scenario == "nb101") {
@@ -569,7 +584,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
-    fullbudget = 12L
+    fullbudget = 200L
     y_var = "val_loss"
     feature_var = "latency"
     n_paths = 30L
@@ -596,10 +611,11 @@ hb_mo_wrapper = function(job, data, instance, ...) {
     optimizer$optimize(instance)
     pareto[[r]] = emoa::nondominated_points(t(instance$archive$data[, instance$archive$cols_y, with = FALSE]))
     instance$archive$data[, niche := nb$get_niche_dt(instance$archive$data[, feature_var, with = FALSE])]
+    instance$archive$data[, runtime_fit := runtime]
+    instance$archive$data[, runtime := c(0, diff(timestamp)) + runtime]
     data[[r]] = instance$archive$data
     best[[r]] = instance$archive$best()
     tmp = cummin_per_niche(instance$archive, nb = nb, y_var = y_var)
-    tmp[, method := "hb_mo"]
     tmp[, repl := r]
     res[[r]] = tmp
   }
