@@ -25,7 +25,7 @@ bop_wrapper = function(job, data, instance, ...) {
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
     instance = make_nb101_qdo(ss, nb = nb, n_evals = 100L)
   } else if (scenario == "nb201") {
-    # cifar10, cifar100, imagenet
+    # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
     fullbudget = 200L
     y_var = "val_loss"
@@ -35,7 +35,7 @@ bop_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_qdo(ss, nb = nb, n_evals = 100L)
@@ -116,7 +116,7 @@ parego_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo(ss, n_evals = 100L)
@@ -199,7 +199,7 @@ smsego_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo(ss, n_evals = 100L)
@@ -281,7 +281,7 @@ random_search_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo(ss, n_evals = 100L)
@@ -349,7 +349,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
@@ -436,7 +436,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
@@ -503,7 +503,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
@@ -592,7 +592,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
       switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
     } else if (dataset == "cifar100") {
       switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "imagenet") {
+    } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
     instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
