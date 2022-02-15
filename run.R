@@ -73,7 +73,7 @@ for (i in seq_len(nrow(optimizers))) {
 
 # walltime estimate: ~ 5000 for 100 repls (default)
 jobs = findJobs()
-resources.serial.default = list(walltime = 3600L * 12L, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
+resources.serial.default = list(walltime = 3600L * 5, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
 done = findDone()
@@ -96,8 +96,40 @@ pareto = reduceResultsList(done, function(x, job) {
 pareto = rbindlist(pareto, fill = TRUE)
 saveRDS(pareto, "pareto.rds")
 
+# best final val_loss and test_loss (of best val_loss architecture) per niche (if no solution 100)
 best = reduceResultsList(done, function(x, job) {
-  tmp = rbindlist(x$best)
+  worst = 100
+  instance = job$instance
+  scenario = as.character(instance$scenario)
+  dataset = as.character(instance$instance)
+  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
+  nb = if (scenario == "nb101") {
+    switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
+  } else if (scenario == "nb201") {
+    if (dataset == "cifar10") {
+      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
+    } else if (dataset == "cifar100") {
+      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
+    } else if (dataset == "ImageNet16-120") {
+      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
+    }
+  }
+  niches_ids = map_chr(nb$niches, "id")
+
+  tmp = map_dtr(seq_along(x$data), function(r) {
+    data = x$data[[r]][, c("val_loss", "test_loss", "niche")]
+    data$orig = seq_len(NROW(data))
+    data = data[, lapply(.SD, unlist), by = orig]
+    data[, orig := NULL]
+    res = data[, .(val_loss = min(val_loss)), by = .(niche)]
+    res = data[res, on = c("niche", "val_loss")]
+    for (nid in niches_ids[niches_ids %nin% res$niche]) {
+      res = rbind(res, data.table(niche = nid, val_loss = worst, test_loss = worst))
+    }
+    res[, repl := r]
+    res
+  })
+
   tmp[, method := job$pars$algo.pars$algorithm]
   tmp[, scenario := job$instance$scenario]
   tmp[, instance := job$instance$instance]
