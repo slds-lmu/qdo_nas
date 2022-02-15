@@ -77,7 +77,7 @@ get_test_loss = function(arch, ss) {
   data.table(test_loss = py_to_r(cell$get_test_loss(ss$nasbench)))
 }
 
-cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", time_var = "runtime", worst = 100) {
+cummin_per_niche = function(archive, nb, y_var = "val_loss", budget_var = "epoch", time_var = "runtime", worst = 100) {
   data = copy(archive$data)
   data[, iter := seq_len(.N)]
   data[, cumbudget := cumsum(data[[budget_var]])]
@@ -89,13 +89,6 @@ cummin_per_niche = function(archive, nb, y_var = NULL, budget_var = "epoch", tim
   data$orig = seq_len(NROW(data))
   data = data[, lapply(.SD, unlist), by = orig]
   data[, orig := NULL]
-
-  max_to_min = mult_max_to_min(archive$codomain)
-  y_ids = if (is.null(y_var)) {
-    c(archive$codomain$ids(tags = "minimize"), archive$codomain$ids(tags = "maximize"))
-  } else {
-    y_var
-  }
 
   niches_ids = map_chr(nb$niches, "id")
 
