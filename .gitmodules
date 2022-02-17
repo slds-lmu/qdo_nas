@@ -7,6 +7,3 @@
 [submodule "naszilla"]
 	path = naszilla
 	url = https://github.com/sumny/naszilla.git
-[submodule "multi-obj-baselines"]
-	path = multi-obj-baselines
-	url = https://github.com/sumny/multi-obj-baselines.git
