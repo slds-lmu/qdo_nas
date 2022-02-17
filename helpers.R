@@ -94,7 +94,7 @@ cummin_per_niche = function(archive, nb, y_var = "val_loss", budget_var = "epoch
 
   res = map_dtr(unique(data$iter), function(i) {
     tmp = data[iter <= i, ]
-    res = tmp[, .(incumbent = cummin(get(y_ids))), by = .(niche)]
+    res = tmp[, .(incumbent = cummin(get(y_var))), by = .(niche)]
     res = res[, .(incumbent = min(incumbent)), by = .(niche)]
     for (nid in niches_ids[niches_ids %nin% res$niche]) {
       res = rbind(res, data.table(niche = nid, incumbent = worst))
