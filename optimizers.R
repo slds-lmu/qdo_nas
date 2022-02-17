@@ -10,6 +10,11 @@ bop_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -91,6 +96,11 @@ parego_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -174,6 +184,11 @@ smsego_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -256,6 +271,11 @@ random_search_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -323,6 +343,11 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -410,6 +435,11 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -477,6 +507,11 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
@@ -566,6 +601,11 @@ hb_mo_wrapper = function(job, data, instance, ...) {
   future::plan("sequential")
 
   naszilla = import("naszilla", convert = FALSE)
+  random = import("random", convert = FALSE)
+  numpy = import("numpy", convert = FALSE)
+
+  random$seed(job$seed)
+  numpy$random$seed(job$seed)
 
   scenario = as.character(instance$scenario)
   dataset = as.character(instance$instance)
