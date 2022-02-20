@@ -28,7 +28,7 @@ bop_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_qdo(ss, nb = nb, n_evals = 100L)
+    instance = make_nb101_qdo(ss, nb = nb, n_evals = 200L)
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
@@ -43,7 +43,7 @@ bop_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_qdo(ss, nb = nb, n_evals = 100L)
+    instance = make_nb201_qdo(ss, nb = nb, n_evals = 200L)
   }
 
   ranger = lrn("regr.ranger")
@@ -114,7 +114,7 @@ parego_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_moo(ss, n_evals = 100L)
+    instance = make_nb101_moo(ss, n_evals = 200L)
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
@@ -129,7 +129,7 @@ parego_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_moo(ss, n_evals = 100L)
+    instance = make_nb201_moo(ss, n_evals = 200L)
   }
 
   ranger = lrn("regr.ranger")
@@ -202,7 +202,7 @@ smsego_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_moo(ss, n_evals = 100L)
+    instance = make_nb101_moo(ss, n_evals = 200L)
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
@@ -217,7 +217,7 @@ smsego_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_moo(ss, n_evals = 100L)
+    instance = make_nb201_moo(ss, n_evals = 200L)
   }
 
   ranger = lrn("regr.ranger")
@@ -289,7 +289,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_moo(ss, n_evals = 100L)
+    instance = make_nb101_moo(ss, n_evals = 200L)
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
     ss = naszilla$nas_benchmarks$Nasbench201(dataset = dataset)
@@ -304,7 +304,7 @@ random_search_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_moo(ss, n_evals = 100L)
+    instance = make_nb201_moo(ss, n_evals = 200L)
   }
 
   pareto = res = data = best = vector("list", length = repls)
@@ -361,7 +361,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
+    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 200L * fullbudget)
     eta = 3
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
@@ -377,7 +377,7 @@ bohb_qdo_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
+    instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 200L * fullbudget)
     eta = 3
   }
 
@@ -453,7 +453,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
+    instance = make_nb101_qdo_mf(ss, nb = nb, maxbudget = 200L * fullbudget)
     eta = 3
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
@@ -469,7 +469,7 @@ hb_qdo_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 100L * fullbudget)
+    instance = make_nb201_qdo_mf(ss, nb = nb, maxbudget = 200L * fullbudget)
     eta = 3
   }
 
@@ -525,7 +525,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_moo_mf(ss, maxbudget = 100L * fullbudget)
+    instance = make_nb101_moo_mf(ss, maxbudget = 200L * fullbudget)
     eta = 3
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
@@ -541,7 +541,7 @@ bohb_mo_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
+    instance = make_nb201_moo_mf(ss, maxbudget = 200L * fullbudget)
     eta = 3
   }
 
@@ -619,7 +619,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
     feature_var = "num_params"
     n_paths = 40L
     nb = switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-    instance = make_nb101_moo_mf(ss, maxbudget = 100L * fullbudget)
+    instance = make_nb101_moo_mf(ss, maxbudget = 200L * fullbudget)
     eta = 3
   } else if (scenario == "nb201") {
     # cifar10, cifar100, ImageNet16-120
@@ -635,7 +635,7 @@ hb_mo_wrapper = function(job, data, instance, ...) {
     } else if (dataset == "ImageNet16-120") {
       switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
     }
-    instance = make_nb201_moo_mf(ss, maxbudget = 100L * fullbudget)
+    instance = make_nb201_moo_mf(ss, maxbudget = 200L * fullbudget)
     eta = 3
   }
 
