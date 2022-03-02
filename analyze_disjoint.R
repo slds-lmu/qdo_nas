@@ -6,7 +6,7 @@ library(mlr3misc)
 # data
 results = readRDS("results/results.rds")
 results = results[method != "smsego"]
-results = results[overlapping == TRUE]
+results = results[overlapping == FALSE]
 results$scenario = factor(results$scenario, labels = c("NAS-Bench-101", "NAS-Bench-201"))
 results$instance = factor(results$instance, labels = c("Cifar-10", "Cifar-100", "ImageNet16-120"))
 results$niches = factor(results$niches, labels = c("Small", "Medium", "Large"))
@@ -14,7 +14,7 @@ results$method = factor(results$method, levels = c("bohb_qdo", "hb_qdo", "bop", 
 
 best = readRDS("results/best.rds")
 best = best[method != "smsego"]
-best = best[overlapping == TRUE]
+best = best[overlapping == FALSE]
 best$scenario = factor(best$scenario, labels = c("NAS-Bench-101", "NAS-Bench-201"))
 best$instance = factor(best$instance, labels = c("Cifar-10", "Cifar-100", "ImageNet16-120"))
 best$niches = factor(best$niches, labels = c("Small", "Medium", "Large"))
@@ -43,7 +43,7 @@ best$method = factor(best$method, levels = c("bohb_qdo", "hb_qdo", "bop", "bohb_
 
 pareto = readRDS("results/pareto.rds")
 pareto = pareto[method != "smsego"]
-pareto = pareto[overlapping == TRUE]
+pareto = pareto[overlapping == FALSE]
 pareto$scenario = factor(pareto$scenario, labels = c("NAS-Bench-101", "NAS-Bench-201"))
 pareto$instance = factor(pareto$instance, labels = c("Cifar-10", "Cifar-100", "ImageNet16-120"))
 pareto$niches = factor(pareto$niches, labels = c("Small", "Medium", "Large"))
@@ -66,7 +66,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/anytime_disjoint.png", plot = g, device = "png", width = 12, height = 9)
 
 # average best final test loss of the best final val loss architecture per niche
 best_agg = best[, .(mean_test = mean(test_loss), se_test = sd(test_loss) / sqrt(.N), mean_val = mean(val_loss), se_val = sd(val_loss) / sqrt(.N)), by = .(scenario, instance, method, niches, niche, type)]
@@ -81,7 +81,7 @@ g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type 
   facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/best_test_disjoint.png", plot = g, device = "png", width = 12, height = 9)
 
 # best summed validation and test performance over niches
 best_sum = best[, .(overall_test = sum(test_loss), overall_val = sum(val_loss)), by = .(method, repl, scenario, instance, niches, type)]
@@ -108,7 +108,7 @@ ranks_agg = ranks[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(metho
 # CD plots
 library(scmamp)
 tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])  # switch mean_test to mean_val to get final validation performance ranking
-png("plots/cd_test.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+png("plots/cd_test_disjoint.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
@@ -187,7 +187,7 @@ pareto[, hvi := get_hvi(pareto, scenario, instance, niches), by = .(method, scen
 pareto_agg = pareto[, .(mean_hvi = mean(hvi), se_hvi = sd(hvi) / sqrt(.N)), by = .(method, scenario, instance, niches)]
 pareto_agg[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
 tmp = - as.matrix(dcast(pareto_agg, problem ~ method, value.var = "mean_hvi")[, -1])
-png("plots/cd_hvi.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+png("plots/cd_hvi_disjoint.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
@@ -208,7 +208,7 @@ g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   facet_wrap(~ scenario + instance, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 3)
+ggsave("plots/hvi_disjoint.png", plot = g, device = "png", width = 12, height = 3)
 
 pareto_long = map_dtr(unique(pareto$scenario), function(scenario_) {
   map_dtr(unique(pareto$instance), function(instance_) {
@@ -235,7 +235,7 @@ g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method
   facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/pareto_disjoint.png", plot = g, device = "png", width = 12, height = 9)
 
 
 # ert for mo/qdo to mo targets after half of optimization budget
@@ -266,5 +266,4 @@ ert_comparisons[, qdo_method := factor(qdo_method, levels = c("BOP-ElitesHB", "q
 ert_comparisons_agg = ert_comparisons[, .(mean_ert = mean(ert_fraction_scaled), sd_ert = sd(ert_fraction_scaled), se_ert = sd(ert_fraction_scaled) / sqrt(.N)), by = .(qdo_method)]
 
 print(xtable(dcast(ert_comparisons, problem ~ qdo_method, value.var = "ert_fraction_scaled")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
-
 

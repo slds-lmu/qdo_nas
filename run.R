@@ -25,7 +25,7 @@ for (sf in source_files) {
   source(sf)
 }
 
-reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas", packages = packages, source = source_files)
+reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas_large", packages = packages, source = source_files)
 # reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)
 saveRegistry(reg)
 
@@ -73,7 +73,7 @@ for (i in seq_len(nrow(optimizers))) {
 
 # walltime estimate: ~ 5000 for 100 repls (default)
 jobs = findJobs()
-resources.serial.default = list(walltime = 3600L * 5, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
+resources.serial.default = list(walltime = 3600L * 12, memory = 16000, ntasks = 1L, ncpus = 1L, nodes = 1L)
 submitJobs(jobs, resources = resources.serial.default)
 
 done = findDone()
@@ -87,17 +87,19 @@ results = reduceResultsList(done, function(x, job) {
   tmp
 })
 results = rbindlist(results, fill = TRUE)
-saveRDS(results, "results.rds")
+saveRDS(results, "results/results.rds")
 
 pareto = reduceResultsList(done, function(x, job) {
-  tmp = emoa::nondominated_points(do.call(cbind, x$pareto))
-  data.table(pareto = list(tmp), method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches, overlapping = job$instance$overlapping)
+  tmp = map_dtr(x$pareto, function(y) data.table(pareto = list(y)))
+  tmp = cbind(tmp, data.table(method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches, overlapping = job$instance$overlapping))
+  tmp[, repl := seq_len(.N)]
 })
 pareto = rbindlist(pareto, fill = TRUE)
-saveRDS(pareto, "pareto.rds")
+saveRDS(pareto, "results/pareto.rds")
 
 # best final val_loss and test_loss (of best val_loss architecture) per niche (if no solution 100)
 best = reduceResultsList(done, function(x, job) {
+  set.seed(job$seed)
   worst = 100
   instance = job$instance
   scenario = as.character(instance$scenario)
@@ -115,9 +117,32 @@ best = reduceResultsList(done, function(x, job) {
     }
   }
   niches_ids = map_chr(nb$niches, "id")
+  maxbudget = if (scenario == "nb101") {
+    200 * 108
+  } else if (scenario == "nb201") {
+    200 * 200
+  }
+  maxbudget_half = maxbudget / 2
 
-  tmp = map_dtr(seq_along(x$data), function(r) {
-    data = x$data[[r]][, c("val_loss", "test_loss", "niche")]
+  tmp1 = map_dtr(seq_along(x$data), function(r) {
+    data = x$data[[r]][cumsum(epoch) <= maxbudget, c("val_loss", "test_loss", "niche")]
+    data$orig = seq_len(NROW(data))
+    data_long = data[, lapply(.SD, unlist), by = orig]
+    data[, orig := NULL]
+    data_long[, orig := NULL]
+    res = data_long[, .(val_loss = min(val_loss)), by = .(niche)]
+    res = data_long[res, on = c("niche", "val_loss")]
+    for (nid in niches_ids[niches_ids %nin% res$niche]) {
+      res = rbind(res, data.table(niche = nid, val_loss = worst, test_loss = worst))
+    }
+    res = res[, .SD[sample(.N, size = 1)], niche]  # it can happen that architectures have exactly the same val_loss and now there are multiple rows with different test losses; in this case sample one (this is what would happen in practise)
+    res[, repl := r]
+    res
+  })
+  tmp1[, type := "full"]
+
+  tmp2 = map_dtr(seq_along(x$data), function(r) {
+    data = x$data[[r]][cumsum(epoch) <= maxbudget_half, c("val_loss", "test_loss", "niche")]
     data$orig = seq_len(NROW(data))
     data = data[, lapply(.SD, unlist), by = orig]
     data[, orig := NULL]
@@ -126,9 +151,13 @@ best = reduceResultsList(done, function(x, job) {
     for (nid in niches_ids[niches_ids %nin% res$niche]) {
       res = rbind(res, data.table(niche = nid, val_loss = worst, test_loss = worst))
     }
+    res = res[, .SD[sample(.N, size = 1)], niche]  # it can happen that architectures have exactly the same val_loss and now there are multiple rows with different test losses; in this case sample one (this is what would happen in practise)
     res[, repl := r]
     res
   })
+  tmp2[, type := "half"]
+
+  tmp = rbind(tmp1, tmp2)
 
   tmp[, method := job$pars$algo.pars$algorithm]
   tmp[, scenario := job$instance$scenario]
@@ -138,5 +167,5 @@ best = reduceResultsList(done, function(x, job) {
   tmp
 })
 best = rbindlist(best, fill = TRUE)
-saveRDS(best, "best.rds")
+saveRDS(best, "results/best.rds")
 

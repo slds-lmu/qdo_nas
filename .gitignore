@@ -5,7 +5,3 @@ Pipfile
 Pipfile.lock
 *.rds
 *.png
-ToDo
-attribution
-pareto_plot.R
-pareto_plot_edited.xcf

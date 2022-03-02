@@ -12,6 +12,7 @@
 #np.quantile(num_params, 0.5)
 #np.quantile(num_params, [0.01, 0.05, 0.1, 0.3])
 #np.quantile(num_params, [0.01, 0.02, 0.5, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7])
+#np.max(num_params) # 49979274
 nb101_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(num_params = c(0, 5356682)))
 nb101_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(num_params = c(0, Inf)))
 nb101_small_nb = NichesBoundaries$new("nb101_small", niches_boundaries = list(niche1 = nb101_small_n1, niche2 = nb101_small_n2))
@@ -38,14 +39,14 @@ nb101_large_nb = NichesBoundaries$new("nb101_large", niches_boundaries = list(ni
 # nb201
 # latency
 #from nas_201_api import NASBench201API as API
-# import numpy as np
+#import numpy as np
 #api = API("naszilla/nas_benchmark_datasets/NAS-Bench-201-v1_0-e61699.pth")
 #num = len(api)
 #latency_cifar10 = []
 #latency_cifar100 = []
 #latency_imagenet = []
 #for i, arch_str in enumerate(api):
-#  info = api.query_meta_info_by_index(i)
+#  info = api.query_meta_info_by_index(i, hp="200")
 #  latency_cifar10.append(info.get_latency("cifar10-valid"))
 #  latency_cifar100.append(info.get_latency("cifar100"))
 #  latency_imagenet.append(info.get_latency("ImageNet16-120"))
@@ -53,14 +54,17 @@ nb101_large_nb = NichesBoundaries$new("nb101_large", niches_boundaries = list(ni
 #np.quantile(latency_cifar10, 0.5)
 #np.quantile(latency_cifar10, [0.01, 0.05, 0.1, 0.3])
 #np.quantile(latency_cifar10, [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7])
+#np.max(latency_cifar10) # 0.02722082639995374
 #
 #np.quantile(latency_cifar100, 0.5)
 #np.quantile(latency_cifar100, [0.01, 0.05, 0.1, 0.3])
 #np.quantile(latency_cifar100, [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7]) 
+#np.max(latency_cifar100) # 0.02614096800486247
 #
 #np.quantile(latency_imagenet, 0.5)
 #np.quantile(latency_imagenet, [0.01, 0.05, 0.1, 0.3])
 #np.quantile(latency_imagenet, [0.01, 0.02, 0.05, 0.1, 0.2, 0.3, 0.4, 0.5, 0.7]) 
+#np.max(latency_imagenet) # 0.02822377681732178
 
 nb201_cifar10_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 0.01596731888620477)))
 nb201_cifar10_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0, Inf)))
