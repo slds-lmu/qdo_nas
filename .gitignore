@@ -6,3 +6,5 @@ Pipfile
 Pipfile.lock
 *.rds
 *.png
+*.pth
+*.tfrecord

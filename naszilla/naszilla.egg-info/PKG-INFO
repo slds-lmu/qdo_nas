@@ -1,0 +1,16 @@
+Metadata-Version: 2.1
+Name: naszilla
+Version: 1.0
+Summary: python framework for NAS algorithms on benchmark search spaces
+Home-page: https://github.com/naszilla/naszilla
+Author: Colin White, Willie Neiswanger
+Author-email: crwhite@cs.cmu.edu
+License: Apache 2.0
+Keywords: AutoML,NAS,Deep Learning
+Platform: UNKNOWN
+Classifier: Programming Language :: Python :: 3
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+License-File: LICENSE
+
+UNKNOWN
+
