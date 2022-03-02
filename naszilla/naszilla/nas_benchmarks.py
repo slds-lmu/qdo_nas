@@ -12,7 +12,7 @@ from naszilla.nas_bench_201.cell_201 import Cell201
 from naszilla.nas_bench_301.cell_301 import Cell301
 
 
-default_data_folder = os.path.expanduser("/home/lps/Phd/qdo_nas/naszilla") + '/nas_benchmark_datasets/'
+default_data_folder = os.path.abspath('naszilla/nas_benchmark_datasets/') + '/'
 
 
 class Nasbench:

@@ -4,7 +4,5 @@ renv
 renv.lock
 Pipfile
 Pipfile.lock
-*.rds
-*.png
 *.pth
 *.tfrecord

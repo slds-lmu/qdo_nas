@@ -25,9 +25,11 @@ for (sf in source_files) {
   source(sf)
 }
 
-reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas_large", packages = packages, source = source_files)
-# reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)
+#reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas_large", packages = packages, source = source_files)
+reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)  # interactive session
 saveRegistry(reg)
+# reg = loadRegistry("registry_qdo_nas_large_clean")  # to inspect the original registry on the cluster
+# tab = getJobTable()
 
 # add algorithms
 addAlgorithm("bop", fun = bop_wrapper)
