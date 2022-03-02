@@ -1,0 +1,159 @@
+{
+    "hyperparameters": [
+        {
+            "name": "model_type",
+            "type": "categorical",
+            "choices": ["mobilenet_v2_torchhub", "resnet18", "efficientnet_b0", "efficientnet_se_b0"],
+            "default": "mobilenet_v2_torchhub",
+            "probabilities": null
+        }, 
+        {
+            "name": "pruning_mode",
+            "type": "categorical",
+            "choices": ["conv0", "conv1", "conv2", "conv1andconv2", "all"],
+            "default": "conv1andconv2",
+            "probabilities": null
+        },     
+        {
+            "name": "pruner_name",
+            "type": "categorical",
+            "choices": ["l1", "l2", "slim", "agp", "fpgm", "mean_activation", "apoz", "taylorfo"],
+            "default": "l1",
+            "probabilities": null
+        },
+        {
+            "name": "sparsity",
+            "type": "uniform_float",
+            "log": false,
+            "lower": 1e-4,
+            "upper": 1.0,
+            "default": 0.5
+        },
+        {
+            "name": "agp_pruning_alg",
+            "type": "categorical",
+            "choices": ["l1", "l2", "slim", "fpgm", "mean_activation", "apoz", "taylorfo"],
+            "default": "l1",
+            "probabilities": null
+        },
+        {
+            "name": "agp_n_iters",
+            "type": "uniform_int",
+            "log": false,
+            "lower": 1,
+            "upper": 100,
+            "default": 64
+        },       
+        {
+            "name": "agp_n_epochs_per_iter",
+            "type": "uniform_int",
+            "log": false,
+            "lower": 1,
+            "upper": 100,
+            "default": 1
+        },
+        {
+            "name": "slim_sparsifying_epochs",
+            "type": "uniform_int",
+            "log": false,
+            "lower": 1,
+            "upper": 30,
+            "default": 10
+        },
+        {
+            "name": "speed_up",
+            "type": "categorical",
+            "choices": ["True", "False"],
+            "default": "False",
+            "probabilities": null
+        },
+        {
+            "name": "finetune_epochs",
+            "type": "uniform_int",
+            "log": false,
+            "lower": 0,
+            "upper": 200,
+            "default": 180
+        },
+        {
+            "name": "learning_rate",
+            "type": "uniform_float",
+            "log": true,
+            "lower": 1e-6,
+            "upper": 1e-2,
+            "default": 1e-4
+        },
+        {
+            "name": "weight_decay",
+            "type": "uniform_float",
+            "log": false,
+            "lower": 0.0,
+            "upper": 0.1,
+            "default": 0.0
+        },
+        {
+            "name": "kd",
+            "type": "categorical",
+            "choices": ["True", "False"],
+            "default": "False",
+            "probabilities": null
+        },
+        {
+            "name": "alpha",
+            "type": "uniform_float",
+            "log": false,
+            "lower": 0.0,
+            "upper": 1.0,
+            "default": 0.99
+        }, 
+        {
+            "name": "temp",
+            "type": "uniform_float",
+            "log": false,
+            "lower": 0.0,
+            "upper": 100.0,
+            "default": 8.0
+        }
+    ],
+    "conditions": [
+        {
+          "child": "alpha",
+          "parent": "kd",
+          "type": "EQ",
+          "value": "True"
+        },
+        {
+            "child": "temp",
+            "parent": "kd",
+            "type": "EQ",
+            "value": "True"
+        },
+        {
+            "child": "agp_pruning_alg",
+            "parent": "pruner_name",
+            "type": "EQ",
+            "value": "agp"
+        },
+        {
+            "child": "agp_n_epochs_per_iter",
+            "parent": "pruner_name",
+            "type": "EQ",
+            "value": "agp"
+        },
+        {
+            "child": "agp_n_iters",
+            "parent": "pruner_name",
+            "type": "EQ",
+            "value": "agp"
+        },
+        {
+            "child": "slim_sparsifying_epochs",
+            "parent": "pruner_name",
+            "type": "EQ",
+            "value": "slim"
+        }
+      ],
+    "forbiddens": [],
+    "python_module_version": "0.4.19",
+    "json_format_version": 0.2
+}
