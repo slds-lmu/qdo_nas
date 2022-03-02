@@ -7,3 +7,6 @@
 [submodule "naszilla"]
 	path = naszilla
 	url = https://github.com/sumny/naszilla.git
+[submodule "model_compression"]
+	path = model_compression
+	url = https://github.com/pfistfl/model_compression
