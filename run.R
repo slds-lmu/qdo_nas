@@ -171,3 +171,7 @@ best = reduceResultsList(done, function(x, job) {
 best = rbindlist(best, fill = TRUE)
 saveRDS(best, "results/best.rds")
 
+tab = getJobTable()
+as.numeric(sum(tab[map_lgl(tab$prob.pars, function(p) p$overlapping == TRUE)]$time.running), units = "hours")  # 316.9774 CPUh
+as.numeric(sum(tab[map_lgl(tab$prob.pars, function(p) p$overlapping == FALSE)]$time.running), units = "hours")  # 319.6002 CPUh
+
