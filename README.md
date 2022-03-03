@@ -1,3 +1,5 @@
+test if anonymous updates
+
 R: 4.0.2 for packages that were used during benchmarks see renv.lock
 dir.create("/tmp/experiments")
 .libPaths("/tmp/experiments")
