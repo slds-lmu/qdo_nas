@@ -56,6 +56,8 @@ results_sum_agg[scenario == "NAS-Bench-101", init_budget := 10L * 108L]
 results_sum_agg[scenario == "NAS-Bench-201", init_budget := 10L * 200L]
 results_sum_agg[scenario == "NAS-Bench-101", max_budget := 100L * 108L]
 results_sum_agg[scenario == "NAS-Bench-201", max_budget := 100L * 200L]
+results_sum_agg[, header := paste0(niches, " ", scenario, " ", instance)]
+results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
 # anytime performance of summed validation error
 g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = results_sum_agg[cumbudget >= init_budget & cumbudget <= max_budget]) +
@@ -63,7 +65,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   geom_step() +
   geom_stepribbon(aes(ymin = mean - se, ymax = mean + se), colour = NA, alpha = 0.3) +
   labs(x = "Total Budget used (Epochs)", y = "Average Validation Error Summed over Niches", colour = "Optimizer", fill = "Optimizer") +
-  facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
 ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 9)
@@ -71,6 +73,8 @@ ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 9)
 # average best final test loss of the best final val loss architecture per niche
 best_agg = best[, .(mean_test = mean(test_loss), se_test = sd(test_loss) / sqrt(.N), mean_val = mean(val_loss), se_val = sd(val_loss) / sqrt(.N)), by = .(scenario, instance, method, niches, niche, type)]
 best_agg$niche = factor(best_agg$niche, levels = paste0("niche", 1:10), labels = paste0("Niche ", 1:10))
+best_agg[, header := paste0(niches, " ", scenario, " ", instance)]
+best_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
 # switch mean_test and se_test for mean_val and test_val to get final validation performance
 g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type == "full"]) +
@@ -78,7 +82,7 @@ g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type 
   geom_point() +
   geom_errorbar(aes(ymin = mean_test - se_test, ymax = mean_test + se_test), width = 0.2) +
   labs(x = "Optimizer", y = "Average Test Error", colour = "") +
-  facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
 ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 9)
@@ -200,12 +204,15 @@ pareto_ranks = relation_ensemble(list = pareto_ranks)
 consensus = relation_consensus(pareto_ranks, method = "SD/L")
 ids = tryCatch(relation_class_ids(consensus), error = function(ec) NA_integer_)
 
+pareto_agg[, header := paste0(" ", scenario, " ", instance)]
+pareto_agg[, header := factor(header)]
+
 g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   scale_y_log10() +
   geom_point() +
   geom_errorbar(aes(ymin = mean_hvi - se_hvi, ymax = mean_hvi + se_hvi), width = 0.2) +
   labs(x = "Optimizer", y = "Average HVI", colour = "Niches") +
-  facet_wrap(~ scenario + instance, scales = "free", ncol = 4L) +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
 ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 3)
@@ -228,11 +235,14 @@ pareto_long = map_dtr(unique(pareto$scenario), function(scenario_) {
 pareto_long[, num_params := log(num_params)]
 pareto_long[scenario == "NAS-Bench-101", y2 := num_params]
 pareto_long[scenario == "NAS-Bench-201", y2 := latency]
+pareto_long[, header := paste0(niches, " ", scenario, " ", instance)]
+pareto_long[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
+
 g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method %in% c("BOP-Elites*", "ParEGO*", "Random")]) +
   geom_point(alpha = 0.7) +
   geom_step(aes(linetype = method), direction = "hv", lwd = 1, alpha = 0.7) +
   labs(x = "Log(Number of Parameters) / Latency", y = "Validation Error", colour = "Optimizer", colour = "Optimizer", linetype = "Optimizer") +
-  facet_wrap(~ niches + scenario + instance, scales = "free", ncol = 4L) +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
 ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 9)
@@ -266,5 +276,4 @@ ert_comparisons[, qdo_method := factor(qdo_method, levels = c("BOP-ElitesHB", "q
 ert_comparisons_agg = ert_comparisons[, .(mean_ert = mean(ert_fraction_scaled), sd_ert = sd(ert_fraction_scaled), se_ert = sd(ert_fraction_scaled) / sqrt(.N)), by = .(qdo_method)]
 
 print(xtable(dcast(ert_comparisons, problem ~ qdo_method, value.var = "ert_fraction_scaled")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
-
 
