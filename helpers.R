@@ -72,6 +72,48 @@ OptimizerNAS = R6Class("OptimizerNAS",
   )
 )
 
+# Optimizer used as acquisition function optimizer, random sampling based on adjacency matrix encoding
+# FIXME: document
+OptimizerNASRandom = R6Class("OptimizerNASRandom",
+  inherit = Optimizer,
+  public = list(
+    ss = NULL,
+
+    #' @description
+    #' Creates a new instance of this [R6][R6::R6Class] class.
+    initialize = function(ss, y_col = NULL) {
+      param_set = ps()
+
+      self$ss = ss
+      self$y_col = assert_string(y_col, null.ok = TRUE)
+
+      self$sampler = NASSampler$new(ss)
+
+      super$initialize(
+        param_set = param_set,
+        param_classes = c("ParamUty"),
+        properties = c("single-crit")
+      )
+    },
+
+    archive = NULL,
+
+    y_col = NULL,
+
+    sampler = NULL
+  ),
+
+  private = list(
+    # FIXME: cell_hash comparison is hacky
+    .optimize = function(inst) {
+      archive = self$archive
+      y_col = self$y_col %??% archive$cols_y  # FIXME:
+      candidates = self$sampler$sample(100L)$data
+      inst$eval_batch(candidates)
+    }
+  )
+)
+
 get_test_loss = function(arch, ss) {
   cell = ss$get_cell(arch)
   data.table(test_loss = py_to_r(cell$get_test_loss(ss$nasbench)))
