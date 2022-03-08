@@ -1,9 +1,7 @@
 library(R6)
 library(mlr3)
-#reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
-#reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
-reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
+reticulate::use_python("FIXME_python_path_of_your_virtualenv", required = TRUE)
+reticulate::use_virtualenv("FIXME_python_path_of_your_virtualenv", required = TRUE)
 library(reticulate)
 py_run_file("nn_ensemble.py")
 LearnerRegrBananasNN= R6Class("LearnerRegrBananasNN", inherit = LearnerRegr,
