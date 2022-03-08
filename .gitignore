@@ -6,3 +6,10 @@ Pipfile
 Pipfile.lock
 *.pth
 *.tfrecord
+bbotk/.github/
+bbotk/.gitignore
+mlr3mbo/.github/
+mlr3mbo/.gitignore
+model_compression/.gitignore
+naszilla/.gitignore
+
