@@ -9,7 +9,6 @@ library(mlr3)
 library(mlr3learners)
 source("helpers.R")
 source("scenarios.R")
-source("niches.R")
 source("optimizers.R")
 
 packages = c("R6", "checkmate", "bbotk", "mlr3mbo", "mlr3misc", "data.table", "mlr3", "mlr3learners")

@@ -54,8 +54,8 @@ results_sum = results[, .(overall = sum(incumbent)), by = .(cumbudget, method, r
 results_sum_agg = results_sum[, .(mean = mean(overall), se = sd(overall) / sqrt(.N)), by = .(cumbudget, method, scenario, instance, niches)]
 results_sum_agg[scenario == "NAS-Bench-101", init_budget := 10L * 108L]
 results_sum_agg[scenario == "NAS-Bench-201", init_budget := 10L * 200L]
-results_sum_agg[scenario == "NAS-Bench-101", max_budget := 100L * 108L]
-results_sum_agg[scenario == "NAS-Bench-201", max_budget := 100L * 200L]
+results_sum_agg[scenario == "NAS-Bench-101", max_budget := 200L * 108L]
+results_sum_agg[scenario == "NAS-Bench-201", max_budget := 200L * 200L]
 results_sum_agg[, header := paste0(niches, " ", scenario, " ", instance)]
 results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
@@ -112,6 +112,7 @@ ranks_agg = ranks[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(metho
 # CD plots
 library(scmamp)
 tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])  # switch mean_test to mean_val to get final validation performance ranking
+friedmanTest(tmp)  # test: Friedman's chi-squared = 52.143, df = 6, p-value = 1.745e-09; val: Friedman's chi-squared = 53.464, df = 6, p-value = 9.46e-10
 png("plots/cd_test.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
 plotCD(tmp)
 dev.off()
@@ -191,6 +192,7 @@ pareto[, hvi := get_hvi(pareto, scenario, instance, niches), by = .(method, scen
 pareto_agg = pareto[, .(mean_hvi = mean(hvi), se_hvi = sd(hvi) / sqrt(.N)), by = .(method, scenario, instance, niches)]
 pareto_agg[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
 tmp = - as.matrix(dcast(pareto_agg, problem ~ method, value.var = "mean_hvi")[, -1])
+friedmanTest(tmp)  # Friedman's chi-squared = 41.607, df = 6, p-value = 2.198e-07
 png("plots/cd_hvi.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
 plotCD(tmp)
 dev.off()
@@ -241,7 +243,7 @@ pareto_long[, header := factor(header, levels = levels(factor(header))[c(9:12, 5
 g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method %in% c("BOP-Elites*", "ParEGO*", "Random")]) +
   geom_point(alpha = 0.7) +
   geom_step(aes(linetype = method), direction = "hv", lwd = 1, alpha = 0.7) +
-  labs(x = "Log(Number of Parameters) / Latency", y = "Validation Error", colour = "Optimizer", colour = "Optimizer", linetype = "Optimizer") +
+  labs(x = "Log(Number of Parameters) / Latency", y = "Validation Error", colour = "Optimizer", linetype = "Optimizer") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -276,4 +278,50 @@ ert_comparisons[, qdo_method := factor(qdo_method, levels = c("BOP-ElitesHB", "q
 ert_comparisons_agg = ert_comparisons[, .(mean_ert = mean(ert_fraction_scaled), sd_ert = sd(ert_fraction_scaled), se_ert = sd(ert_fraction_scaled) / sqrt(.N)), by = .(qdo_method)]
 
 print(xtable(dcast(ert_comparisons, problem ~ qdo_method, value.var = "ert_fraction_scaled")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
+
+# missing niches analysis
+best[, missing := (val_loss == 100), by = .(niche, method, repl, scenario, instance, niches)]
+best_missing = best[, .(mean_missing = mean(missing)), by = .(niche, method, scenario, instance, niches)]
+best_missing$niche = factor(best_missing$niche, levels = paste0("niche", 1:10), labels = paste0("Niche ", 1:10))
+best_missing[, header := paste0(niches, " ", scenario, " ", instance)]
+best_missing[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
+best_missing[mean_missing == 0, mean_missing := NA_real_]
+g = ggplot(aes(x = method, y = mean_missing, colour = niche, fill = niche), data = best_missing[niches != "Small"]) +  # small has 0
+  geom_bar(position = "stack", stat = "identity") +
+  labs(x = "Optimizer", y = "Rel. Freq. Niche Missed", colour = "Niche", fill = "Niche") +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
+  theme_minimal() +
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
+ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = 6)
+
+# niche boundaries
+library(bbotk)
+
+problems = list(nb101_small_nb, nb101_medium_nb, nb101_large_nb,
+  nb201_cifar10_small_nb, nb201_cifar10_medium_nb, nb201_cifar10_large_nb,
+  nb201_cifar100_small_nb, nb201_cifar100_medium_nb, nb201_cifar100_large_nb,
+  nb201_imagenet_small_nb, nb201_imagenet_medium_nb, nb201_imagenet_large_nb
+)
+
+format_nb = function(nb) {
+  tmp = nb$niche_boundaries[[1L]]
+  paste0("[", tmp[1L], ", ", tmp[2L], ")")
+}
+
+boundaries = map_dtr(problems, function(problem) {
+  nbs = map(problem$niches, format_nb)
+  n_fill = 10 - length(nbs)
+  if (n_fill > 0) {
+    nbs = c(nbs, replicate(n_fill, expr = "", simplify = FALSE))
+  }
+  names(nbs) = paste0("Niche ", seq_along(nbs))
+  data.table(nbs = nbs, niche = names(nbs))
+})
+boundaries[, scenario := rep(c("NAS-Bench-101", "NAS-Bench-201"), c(30, 30 * 3))]
+boundaries[, instance := rep(c("Cifar-10", "Cifar-10", "Cifar-100", "ImageNet16-120"), each = 30)]
+boundaries[, niches := rep(rep(c("Small", "Medium", "Large"), each = 10), 4)]
+boundaries[, problem := paste0(scenario, "_", instance, "_", niches)]
+boundaries[, niche := factor(niche, levels = paste0("Niche ", 1:10))]
+
+print(xtable(dcast(boundaries, problem ~ niche, value.var = "nbs")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
 

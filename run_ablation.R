@@ -9,7 +9,6 @@ library(mlr3)
 library(mlr3learners)
 source("helpers.R")
 source("scenarios.R")
-source("niches.R")
 
 packages = c("R6", "checkmate", "bbotk", "mlr3mbo", "mlr3misc", "data.table", "mlr3", "mlr3learners")
 
@@ -19,21 +18,18 @@ RhpcBLASctl::omp_set_num_threads(1L)
 root = here::here()
 benchmark_dir = file.path(root)
 
-source_files = map_chr(c("helpers.R", "scenarios.R", "optimizers.R", "LearnerRegrBananasNN.R"), function(x) file.path(benchmark_dir, x))
+source_files = map_chr(c("helpers.R", "scenarios.R"), function(x) file.path(benchmark_dir, x))
 for (sf in source_files) {
   source(sf)
 }
+source_files = c(source_files, file.path(benchmark_dir, "LearnerRegrBananasNN.R"))
 
 reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas_ablation", packages = packages, source = source_files)
 # reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)
 saveRegistry(reg)
 
 eval_wrapper = function(job, data, instance, ...) {
-  #reticulate::use_python("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9/bin/python3.7m")
-  #reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/qdo_nas-zvu37In9")
-  reticulate::use_python("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas/bin/python3", required = TRUE)
-  reticulate::use_virtualenv("/dss/dsshome1/lxc0C/ru84tad2/.virtualenvs/qdo_nas", required = TRUE)
-  library(reticulate)
+  # loading reticulate etc. is done in LearnerRegrBananasNN.R
 
   logger = lgr::get_logger("bbotk")
   logger$set_threshold("warn")
@@ -77,14 +73,13 @@ eval_wrapper = function(job, data, instance, ...) {
 
   xs = list(...)
 
-  learner = if (xs$surrogate == "ranger") {
-    ranger = lrn("regr.ranger")
-    ranger$param_set$values$se.method = "jack"
-    ranger
+  ranger = lrn("regr.ranger")
+  ranger$param_set$values$se.method = "jack"
+  surrogate = if (xs$surrogate == "ranger") {
+    SurrogateLearners$new(list(ranger, ranger$clone(deep = TRUE)))
   } else {
-    LearnerRegrBananasNN.R$new()
+    SurrogateLearners$new(list(ranger, LearnerRegrBananasNN$new()))
   }
-  surrogate = default_surrogate(instance, learner = learner, n_learner = 2L)
   surrogate$y_cols = c(y_var, feature_var)
   surrogate$x_cols = paste0("P", 1:n_paths)
   surrogate$archive = instance$archive
@@ -138,7 +133,6 @@ names(prob_designs) = nn
 
 # add jobs for optimizers
 ablation = setDT(expand.grid(surrogate = c("ranger", "nn"), acqopt = c("random", "mutation")))
-optimizers = data.table(algorithm = c("bop", "parego", "smsego", "random_search", "bohb_qdo", "hb_qdo", "bohb_mo", "hb_mo"))
 
 for (i in seq_len(nrow(ablation))) {
   algo_designs = setNames(list(ablation[i, ]), nm = "eval")
@@ -146,22 +140,26 @@ for (i in seq_len(nrow(ablation))) {
   ids = addExperiments(
     prob.designs = prob_designs,
     algo.designs = algo_designs,
-    repls = 100L
+    repls = 30L
   )
   addJobTags(ids, as.character(paste0(ablation[i, ]$surrogate, "_", ablation[i, ]$acqopt)))
 }
 
 jobs = getJobTable()
-jobs[, walltime := 600L]
-jobs[grepl("nn", tags), walltime := 3600L * 24L]
-resources.serial.default = list(walltime = 600L, memory = 12000L, ntasks = 1L, ncpus = 1L, nodes = 1L)
-submitJobs(jobs, resources = resources.serial.default)
+jobs[, walltime := 6000L]
+jobs[, memory := 8000L]
+jobs[grepl("nn", tags), walltime := 3600L * 10L]
+jobs[grepl("nn", tags), memory := 16000L]
+
+resources.serial.default = list(ntasks = 1L, ncpus = 1L, nodes = 1L)
+submitJobs(jobs[, c("job.id", "walltime", "memory")], resources = resources.serial.default)
 
 done = findDone()
 results = reduceResultsList(done, function(x, job) {
-  # FIXME:
-  tmp = rbindlist(x$res)
-  tmp[, method := job$pars$algo.pars$algorithm]
+  tmp = x$res
+  tmp[, surrogate := job$algo.pars$surrogate]
+  tmp[, acqopt := job$algo.pars$acqopt]
+  tmp[, repl := job$repl]
   tmp[, scenario := job$instance$scenario]
   tmp[, instance := job$instance$instance]
   tmp[, niches := job$instance$niches]
@@ -169,87 +167,5 @@ results = reduceResultsList(done, function(x, job) {
   tmp
 })
 results = rbindlist(results, fill = TRUE)
-saveRDS(results, "results/results.rds")
-
-pareto = reduceResultsList(done, function(x, job) {
-  # FIXME:
-  tmp = map_dtr(x$pareto, function(y) data.table(pareto = list(y)))
-  tmp = cbind(tmp, data.table(method = job$pars$algo.pars$algorithm, scenario = job$instance$scenario, instance = job$instance$instance, niches = job$instance$niches, overlapping = job$instance$overlapping))
-  tmp[, repl := seq_len(.N)]
-})
-pareto = rbindlist(pareto, fill = TRUE)
-saveRDS(pareto, "results/pareto.rds")
-
-# best final val_loss and test_loss (of best val_loss architecture) per niche (if no solution 100)
-best = reduceResultsList(done, function(x, job) {
-  # FIXME:
-  set.seed(job$seed)
-  worst = 100
-  instance = job$instance
-  scenario = as.character(instance$scenario)
-  dataset = as.character(instance$instance)
-  if (instance$overlapping) source("niches_overlapping.R") else source("niches.R")
-  nb = if (scenario == "nb101") {
-    switch(as.character(instance$niches), "small" = nb101_small_nb, "medium" = nb101_medium_nb, "large" = nb101_large_nb)
-  } else if (scenario == "nb201") {
-    if (dataset == "cifar10") {
-      switch(as.character(instance$niches), "small" = nb201_cifar10_small_nb, "medium" = nb201_cifar10_medium_nb, "large" = nb201_cifar10_large_nb)
-    } else if (dataset == "cifar100") {
-      switch(as.character(instance$niches), "small" = nb201_cifar100_small_nb, "medium" = nb201_cifar100_medium_nb, "large" = nb201_cifar100_large_nb)
-    } else if (dataset == "ImageNet16-120") {
-      switch(as.character(instance$niches), "small" = nb201_imagenet_small_nb, "medium" = nb201_imagenet_medium_nb, "large" = nb201_imagenet_large_nb)
-    }
-  }
-  niches_ids = map_chr(nb$niches, "id")
-  maxbudget = if (scenario == "nb101") {
-    200 * 108
-  } else if (scenario == "nb201") {
-    200 * 200
-  }
-  maxbudget_half = maxbudget / 2
-
-  tmp1 = map_dtr(seq_along(x$data), function(r) {
-    data = x$data[[r]][cumsum(epoch) <= maxbudget, c("val_loss", "test_loss", "niche")]
-    data$orig = seq_len(NROW(data))
-    data_long = data[, lapply(.SD, unlist), by = orig]
-    data[, orig := NULL]
-    data_long[, orig := NULL]
-    res = data_long[, .(val_loss = min(val_loss)), by = .(niche)]
-    res = data_long[res, on = c("niche", "val_loss")]
-    for (nid in niches_ids[niches_ids %nin% res$niche]) {
-      res = rbind(res, data.table(niche = nid, val_loss = worst, test_loss = worst))
-    }
-    res = res[, .SD[sample(.N, size = 1)], niche]  # it can happen that architectures have exactly the same val_loss and now there are multiple rows with different test losses; in this case sample one (this is what would happen in practise)
-    res[, repl := r]
-    res
-  })
-  tmp1[, type := "full"]
-
-  tmp2 = map_dtr(seq_along(x$data), function(r) {
-    data = x$data[[r]][cumsum(epoch) <= maxbudget_half, c("val_loss", "test_loss", "niche")]
-    data$orig = seq_len(NROW(data))
-    data = data[, lapply(.SD, unlist), by = orig]
-    data[, orig := NULL]
-    res = data[, .(val_loss = min(val_loss)), by = .(niche)]
-    res = data[res, on = c("niche", "val_loss")]
-    for (nid in niches_ids[niches_ids %nin% res$niche]) {
-      res = rbind(res, data.table(niche = nid, val_loss = worst, test_loss = worst))
-    }
-    res = res[, .SD[sample(.N, size = 1)], niche]  # it can happen that architectures have exactly the same val_loss and now there are multiple rows with different test losses; in this case sample one (this is what would happen in practise)
-    res[, repl := r]
-    res
-  })
-  tmp2[, type := "half"]
-
-  tmp = rbind(tmp1, tmp2)
-
-  tmp[, method := job$pars$algo.pars$algorithm]
-  tmp[, scenario := job$instance$scenario]
-  tmp[, instance := job$instance$instance]
-  tmp[, niches := job$instance$niches]
-  tmp[, overlapping := job$instance$overlapping]
-  tmp
-})
-best = rbindlist(best, fill = TRUE)
-saveRDS(best, "results/best.rds")
+saveRDS(results, "results/results_ablation.rds")
 
