@@ -1,7 +1,6 @@
-library(data.table)
-library(ggplot2)
-library(pammtools)
-library(mlr3misc)
+library(data.table)  # 1.14.2
+library(ggplot2)  # 3.3.5
+library(pammtools)  # 0.5.7
 
 # NOTE: ablation was only run for 100 evals
 

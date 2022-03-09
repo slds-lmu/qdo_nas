@@ -1,7 +1,6 @@
-library(data.table)
-library(ggplot2)
-library(pammtools)
-library(mlr3misc)
+library(data.table)  # 1.14.2
+library(ggplot2)  # 3.3.5
+library(pammtools)  # 0.5.7
 
 # data
 results = readRDS("results/results.rds")
@@ -110,7 +109,7 @@ ranks[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
 ranks_agg = ranks[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(method)]
 
 # CD plots
-library(scmamp)
+library(scmamp)  # 0.3.2
 tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])  # switch mean_test to mean_val to get final validation performance ranking
 friedmanTest(tmp)  # test: Friedman's chi-squared = 52.143, df = 6, p-value = 1.745e-09; val: Friedman's chi-squared = 53.464, df = 6, p-value = 9.46e-10
 png("plots/cd_test.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
@@ -118,7 +117,7 @@ plotCD(tmp)
 dev.off()
 
 # concensus rankings
-library(relations)
+library(relations)  # 0.6-11
 all_ranks = map(unique(best_sum_agg$problem), function(problem_) {
   agg = best_sum_agg[type == "full" & problem == problem_]
   setorderv(agg, "mean_test")
@@ -129,7 +128,7 @@ consensus = relation_consensus(all_ranks, method = "SD/L")
 ids = tryCatch(relation_class_ids(consensus), error = function(ec) NA_integer_)
 
 # anovas
-library(xtable)
+library(xtable)  # 1.8-4
 bold = function(x) {paste("\\textbf{", x, "}", sep = "")}
 
 aov_dat_half = copy(best_sum_agg[type == "half" & method %nin% c("qdHB", "moHB*")])

@@ -1,6 +1,6 @@
-library(data.table)
-library(ggplot2)
-library(ggimage)
+library(data.table)  # 1.14.2
+library(ggplot2)  # 3.3.5
+library(ggimage) # 0.3.0
 
 dat = readRDS("results/pareto_plot.rds")
 extended = rbind(dat, data.table(val_err = c(85, 81, 70, 55, 31.5, 19, 12), params = c(680000, 840000, 900000, 950000, 1100000, 2300000, 2400000)))
