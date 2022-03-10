@@ -12,10 +12,8 @@ library(mlr3pipelines)
 
 set.seed(2906)
 
-#reticulate::use_python("/home/lps/.local/share/virtualenvs/model_compression-wNYRZKc3/bin/python3.7m")
-#reticulate::use_virtualenv("/home/lps/.local/share/virtualenvs/model_compression-wNYRZKc3")
-reticulate::use_python("/home/ru84tad2/.virtualenvs/model_compression/bin/python3")
-reticulate::use_virtualenv("/home/ru84tad2/.virtualenvs/model_compression")
+reticulate::use_python("FIXME_python_path_of_your_virtualenv")
+reticulate::use_virtualenv("FIXME_python_path_of_your_virtualenv")
 
 source("helpers.R")
 source("param_set.R")
@@ -31,10 +29,13 @@ nb = NichesBoundaries$new("nb_mobilenet_v2_torchhub", niches_boundaries = list(n
 eval_wrapper = function(xss) {
   library(reticulate)
   py_run_file("prepare_R.py")
+  
+  # comment the lines below if you really want to run this on a cpu
   py$torch$cuda$is_available()
   py$torch$cuda$device(py$torch$cuda$current_device())
   py$torch$cuda$device_count()
   py$torch$cuda$get_device_name(py$torch$cuda$current_device())
+
   py$run_pruning_from_R(xss)
 }
 
