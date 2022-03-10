@@ -169,3 +169,6 @@ results = reduceResultsList(done, function(x, job) {
 results = rbindlist(results, fill = TRUE)
 saveRDS(results, "results/results_ablation.rds")
 
+tab = getJobTable()
+as.numeric(sum(tab$time.running), units = "hours")  # 345.264 CPUh
+

@@ -67,6 +67,7 @@ rsa==4.8
 schema==0.7.5
 scikit-learn==1.0.2
 scipy==1.7.3
+setuptools==59.5.0
 simplejson==3.17.6
 six==1.16.0
 stack-data==0.1.4
@@ -75,9 +76,9 @@ tensorboard-data-server==0.6.1
 tensorboard-plugin-wit==1.8.1
 threadpoolctl==3.0.0
 tomli==1.2.3
-torch==1.10.2+cu113
-torchaudio==0.10.2+cu113
-torchvision==0.11.3+cu113
+torch==1.10.2
+torchaudio==0.10.2
+torchvision==0.11.3
 tqdm==4.62.3
 traitlets==5.1.1
 typeguard==2.13.3

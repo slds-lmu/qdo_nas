@@ -23,7 +23,7 @@ The repository is structured as follows:
     * the `renv.lock` files list the exact R packages that were used on the cluster and analogously the `requirements.txt`
       files list the exact python modules that were used on the cluster
 
-To obtain more information about the optimizers, please see:
+To obtain more information about the optimizers in general, please see:
   * `mlr3mbo/R/OptimizerBOHBQDO.R` for BOP-ElitesHB
   * `mlr3mbo/R/OptimizerHyperbandQDO.R` for qdHB
   * `mlr3mbo/R/bayesopt_bop.R` for BOP-Elites\*
@@ -37,10 +37,10 @@ To replicate our results, install R and python (note that python must be compile
 
 We assume that you work in a terminal and are in the current directory (`qdo_nas`)
 
-Then do the following within R (we assume that you managed to install R 4.0.2 or used a docker environment):
+Then do the following within R (we assume that you managed to install R 4.0.2 or use a docker environment):
 
 ```r
-install.packages("renv")  # 0.15.4
+install.packages("renv")  # 0.14.0
 install.packages("remotes")  # 2.4.2
 remotes::install_github("mlr-org/mlr3tuning", ref = "tunermbo")
 remotes::install_local("bbotk", upgrade = "never")
@@ -62,28 +62,9 @@ pip install -e.
 Then download the following files:
 * [nasbench\_only108.tfrecord](https://storage.googleapis.com/nasbench/nasbench_only108.tfrecord)
 * [NAS-Bench-201-v1\_1-096897.pth](https://drive.google.com/file/d/16Y0UwGisiouVRxW-W5hEtbxmcHw_0hF_/view)
+
 and put them in `naszilla/nas_benchmark_datasets/`
 
 Finally, if you want to rerun experiments, make sure to adapt some paths to point at your newly created virtualenv, i.e., in `optimizers.R` and `LearnerRegrBananasNN.R`.
 We indicate this via `"FIXME_python_path_of_your_virtualenv"` as a placeholder.
 
-FIXME:
-
-test if this works
-
-note in all analyze scripts which versions were used
-
-naszilla apache v2 show what changed
-
-unzip registry_qdo_nas_large_clean.zip etc.
-
-run_ablation.R same last lines like run.R
-
-model_compression
-Compressing MobileNetPruning.ipynb
-MobileNetPruning.ipynb
-
-pip install nni==2.6
-pytorch
-tensorboard
-ConfigSpace
