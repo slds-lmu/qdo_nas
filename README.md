@@ -60,7 +60,7 @@ pip install -e.
 ```
 
 Then download the following files:
-* [nasbench\_only108.tfrecord](https://storage.googleapis.com/nasbench/nasbench_only108.tfrecord)
+* [nasbench\_full.tfrecord](https://storage.googleapis.com/nasbench/nasbench_full.tfrecord)
 * [NAS-Bench-201-v1\_1-096897.pth](https://drive.google.com/file/d/16Y0UwGisiouVRxW-W5hEtbxmcHw_0hF_/view)
 
 and put them in `naszilla/nas_benchmark_datasets/`.
