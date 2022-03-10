@@ -15,4 +15,5 @@ model_compression/.gitignore
 naszilla/.github
 naszilla/.gitignore
 model_compression/data/
+model_compression/.ipynb_checkpoints/
 
