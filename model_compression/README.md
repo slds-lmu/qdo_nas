@@ -1,4 +1,4 @@
-This directory contains all code regarding the application of applying qdNAS to model compression
+This directory contains all code regarding the application of qdNAS to model compression:
 
 * `instance.rds` is the result file
 * `run.R` is the main file
