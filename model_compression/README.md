@@ -15,7 +15,7 @@ R 4.1.2 and python 3.8.10 were used.
 
 To replicate our results, install R and python (note that python must be compiled with the `CONFIGURE_OPTS=--enable-shared` flag due to being used within R via reticulate).
 
-We assume that you work in a terminal and are in the current directory (`model_compression`)
+We assume that you work in a terminal and are in the current directory (`model_compression`).
 
 Then do the following within R (we assume that you managed to install R 4.1.2 or use a docker environment):
 
