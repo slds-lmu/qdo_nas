@@ -36,5 +36,5 @@ https://data.pyg.org/whl/torch-1.5.0/torch_cluster-1.5.5%2Bcpu-cp37-cp37m-linux_
 # torch-spline-conv==1.2.0+cpu -f https://pytorch-geometric.com/whl/torch-1.5.0.html
 https://data.pyg.org/whl/torch-1.5.0/torch_spline_conv-1.2.0%2Bcpu-cp37-cp37m-linux_x86_64.whl
 torch-geometric
--e git://github.com/google-research/nasbench.git@master#egg=nasbench
--e git://github.com/automl/nasbench301.git@master#egg=nasbench301
+git+https://github.com/google-research/nasbench.git@master#egg=nasbench
+git+https://github.com/automl/nasbench301.git@master#egg=nasbench301
