@@ -8,13 +8,13 @@ This directory contains all code regarding our benchmarks on the MobileNetV3 sea
   feature functions (latency and size)
 * `analyze.R` contains code needed to analyze the results of the benchmark experiments and create plots and tables
     * note that these files require additional packages not mentioned in the `renv.lock` files (because analyses were not
-      done on the clusters); simply install them manually to analyze the results (for those packages we indicate versions via "#..." but those do not matter much)
+      done on the cluster); simply install them manually to analyze the results (for those packages we indicate versions via "#..." but those do not matter much)
 * `helpers_mobilenet.R`, `niches_overlapping.R`, `niches_overlapping_2F.R`, `optimizers.R`, `optimizers_2F.R`, `scenarios.R`, `scenarios_2F.R` and `prepare_mobilenet_R.py` are helper files that contain code needed by the main files
 * `qdo_evo.py` is the main file for the comparison of MAP-Elites to regularized evolution within Once-for-All
   * `evolution_finder_custom.py` contains helper code
 * `qdo_evo.R` contains code needed to analyze the MAP-Elites and regularized evolution comparison
 * `registry_qdo_nas_ofa_clean.zip` and `registry_qdo_nas_ofa_2Fx_clean.zip` are the original batchtools
-    registries as used on the clusters (stripped of the individual results which are collected in `results/` and stripped
+    registries as used on the cluster (stripped of the individual results which are collected in `results/` and stripped
     of the logs to save some space); see `run.R` or `run_2F.R` for an example on how to inspect these registries
     after unzipping them; these registries also store the random seeds
 

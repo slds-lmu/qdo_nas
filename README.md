@@ -6,21 +6,22 @@ The repository is structured as follows:
   * `model_compression/` contains all code regarding the application of applying qdNAS to model compression
       * please see the README there for more information
   * `ofa`/ contains all code regarding our benchmarks on the MobileNetV3 search space and Once-for-All comparisons
+      * please see the README there for more information
   * `results/` contains raw benchmark results saved as `.rds` files
   * `plots/` contains all plots presented in the paper
   * `run.R` and `run_ablation.R` are the main files used for the benchmark experiments and the ablation study
   * `analyze.R` and `analyze_ablation.R` contain code needed to analyze the results of the benchmark experiments and
     ablation study and create plots and tables
     * note that these files require additional packages not mentioned in the `renv.lock` files (because analyses were not
-      done on the clusters); simply install them manually to analyze the results (for those packages we indicate versions via "#..." but those do not matter much)
+      done on the cluster); simply install them manually to analyze the results (for those packages we indicate versions via "#..." but those do not matter much)
   * `LearnerRegrBananasNN.R`, `helpers.R`, `niches.R`, `niches_overlapping.R`, `nn_ensemble.py`, `optimizers.R` and `scenarios.R` are
     helper files that contain code needed by the main files
   * `pareto_plot.R` is the code for generating Figure 1
   * `registry_qdo_nas_large_clean.zip` and `registry_qdo_nas_ablation_clean.zip` are the original batchtools
-    registries as used on the clusters (stripped of the individual results which are collected in `results/` and stripped
+    registries as used on the cluster (stripped of the individual results which are collected in `results/` and stripped
     of the logs to save some space); see `run.R` or `run_ablation.R` for an example on how to inspect these registries
     after unzipping them; these registries also store the random seeds
-  * `requirements/` contains an `experiments/` and `model_compression/` folder each with an `renv.lock` and `requirements.txt`
+  * `requirements/` contains an `experiments/`, `model_compression/` and `ofa/` folder each with an `renv.lock` and `requirements.txt`
     * the `renv.lock` files list the exact R packages that were used on the cluster and analogously the `requirements.txt`
       files list the exact python modules that were used on the cluster
 
