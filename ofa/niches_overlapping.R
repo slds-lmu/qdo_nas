@@ -1,0 +1,48 @@
+# note10 latency
+ofa_note10_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 17.5)))
+ofa_note10_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0, 30)))
+ofa_note10_small_nb = NichesBoundaries$new("ofa_note10", niches_boundaries = list(niche1 = ofa_note10_small_n1, niche2 = ofa_note10_small_n2))
+
+ofa_note10_medium_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 15)))
+ofa_note10_medium_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0, 20)))
+ofa_note10_medium_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(latency = c(0, 25)))
+ofa_note10_medium_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(latency = c(0, 30)))
+ofa_note10_medium_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(latency = c(0, 35)))
+ofa_note10_medium_nb = NichesBoundaries$new("ofa_note10", niches_boundaries = list(niche1 = ofa_note10_medium_n1, niche2 = ofa_note10_medium_n2, niche3 = ofa_note10_medium_n3, niche4 = ofa_note10_medium_n4, niche5 = ofa_note10_medium_n5))
+
+ofa_note10_large_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(latency = c(0, 17)))
+ofa_note10_large_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(latency = c(0, 19)))
+ofa_note10_large_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(latency = c(0, 21)))
+ofa_note10_large_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(latency = c(0, 23)))
+ofa_note10_large_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(latency = c(0, 25)))
+ofa_note10_large_n6 = NicheBoundaries$new("niche6", niche_boundaries = list(latency = c(0, 27)))
+ofa_note10_large_n7 = NicheBoundaries$new("niche7", niche_boundaries = list(latency = c(0, 29)))
+ofa_note10_large_n8 = NicheBoundaries$new("niche8", niche_boundaries = list(latency = c(0, 31)))
+ofa_note10_large_n9 = NicheBoundaries$new("niche9", niche_boundaries = list(latency = c(0, 33)))
+ofa_note10_large_n10 = NicheBoundaries$new("niche10", niche_boundaries = list(latency = c(0, 35)))
+ofa_note10_large_nb = NichesBoundaries$new("ofa_note10", niches_boundaries = list(niche1 = ofa_note10_large_n1, niche2 = ofa_note10_large_n2, niche3 = ofa_note10_large_n3, niche4 = ofa_note10_large_n4, niche5 = ofa_note10_large_n5, niche6 = ofa_note10_large_n6, niche7 = ofa_note10_large_n7, niche8 = ofa_note10_large_n8, niche9 = ofa_note10_large_n9, niche10 = ofa_note10_large_n10))
+
+# flops
+ofa_flops_small_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(flops = c(0, 150)))
+ofa_flops_small_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(flops = c(0, 400)))
+ofa_flops_small_nb = NichesBoundaries$new("ofa_flops", niches_boundaries = list(niche1 = ofa_flops_small_n1, niche2 = ofa_flops_small_n2))
+
+ofa_flops_medium_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(flops = c(0, 150)))
+ofa_flops_medium_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(flops = c(0, 200)))
+ofa_flops_medium_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(flops = c(0, 250)))
+ofa_flops_medium_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(flops = c(0, 300)))
+ofa_flops_medium_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(flops = c(0, 400)))
+ofa_flops_medium_nb = NichesBoundaries$new("ofa_flops", niches_boundaries = list(niche1 = ofa_flops_medium_n1, niche2 = ofa_flops_medium_n2, niche3 = ofa_flops_medium_n3, niche4 = ofa_flops_medium_n4, niche5 = ofa_flops_medium_n5))
+
+ofa_flops_large_n1 = NicheBoundaries$new("niche1", niche_boundaries = list(flops = c(0, 150)))
+ofa_flops_large_n2 = NicheBoundaries$new("niche2", niche_boundaries = list(flops = c(0, 175)))
+ofa_flops_large_n3 = NicheBoundaries$new("niche3", niche_boundaries = list(flops = c(0, 200)))
+ofa_flops_large_n4 = NicheBoundaries$new("niche4", niche_boundaries = list(flops = c(0, 225)))
+ofa_flops_large_n5 = NicheBoundaries$new("niche5", niche_boundaries = list(flops = c(0, 250)))
+ofa_flops_large_n6 = NicheBoundaries$new("niche6", niche_boundaries = list(flops = c(0, 275)))
+ofa_flops_large_n7 = NicheBoundaries$new("niche7", niche_boundaries = list(flops = c(0, 300)))
+ofa_flops_large_n8 = NicheBoundaries$new("niche8", niche_boundaries = list(flops = c(0, 325)))
+ofa_flops_large_n9 = NicheBoundaries$new("niche9", niche_boundaries = list(flops = c(0, 350)))
+ofa_flops_large_n10 = NicheBoundaries$new("niche10", niche_boundaries = list(flops = c(0, 400)))
+ofa_flops_large_nb = NichesBoundaries$new("ofa_flops", niches_boundaries = list(niche1 = ofa_flops_large_n1, niche2 = ofa_flops_large_n2, niche3 = ofa_flops_large_n3, niche4 = ofa_flops_large_n4, niche5 = ofa_flops_large_n5, niche6 = ofa_flops_large_n6, niche7 = ofa_flops_large_n7, niche8 = ofa_flops_large_n8, niche9 = ofa_flops_large_n9, niche10 = ofa_flops_large_n10))
+

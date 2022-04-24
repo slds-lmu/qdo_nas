@@ -6,14 +6,21 @@ Pipfile
 Pipfile.lock
 *.pth
 *.tfrecord
+bbotk/.git/
 bbotk/.github/
 bbotk/.gitignore
+mlr3mbo/.git/
 mlr3mbo/.github/
 mlr3mbo/.gitignore
-model_compression/.github
+model_compression/.git/
+model_compression/.github/
 model_compression/.gitignore
-naszilla/.github
+naszilla/.git/
+naszilla/.github/
 naszilla/.gitignore
 model_compression/data/
 model_compression/.ipynb_checkpoints/
+ofa/.git/
+ofa/.github/
+ofa/.gitignore
 

@@ -5,6 +5,7 @@ The repository is structured as follows:
   * `bbotk/`, `mlr3mbo/` and `naszilla/` are directories of R packages / python modules that are used
   * `model_compression/` contains all code regarding the application of applying qdNAS to model compression
       * please see the README there for more information
+  * `ofa`/ contains all code regarding our benchmarks on the MobileNetV3 search space and Once-for-All comparisons
   * `results/` contains raw benchmark results saved as `.rds` files
   * `plots/` contains all plots presented in the paper
   * `run.R` and `run_ablation.R` are the main files used for the benchmark experiments and the ablation study
