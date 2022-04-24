@@ -1,8 +1,9 @@
 library(data.table)  # 1.14.2
 library(ggplot2)  # 3.3.5
 library(pammtools)  # 0.5.7
+library(mlr3misc)  # 0.10.0
 
-# NOTE: ablation was only run for 100 evals
+# NOTE: ablation was only run for 100 evals and 30 repls
 
 # data
 results = readRDS("results/results_ablation.rds")

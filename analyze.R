@@ -1,6 +1,7 @@
 library(data.table)  # 1.14.2
 library(ggplot2)  # 3.3.5
 library(pammtools)  # 0.5.7
+library(mlr3misc)  # 0.10.0
 
 # data
 results = readRDS("results/results.rds")
@@ -67,7 +68,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 7)
 
 # average best final test loss of the best final val loss architecture per niche
 best_agg = best[, .(mean_test = mean(test_loss), se_test = sd(test_loss) / sqrt(.N), mean_val = mean(val_loss), se_val = sd(val_loss) / sqrt(.N)), by = .(scenario, instance, method, niches, niche, type)]
@@ -75,7 +76,16 @@ best_agg$niche = factor(best_agg$niche, levels = paste0("niche", 1:10), labels =
 best_agg[, header := paste0(niches, " ", scenario, " ", instance)]
 best_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
-# switch mean_test and se_test for mean_val and test_val to get final validation performance
+g = ggplot(aes(x = method, y = mean_val, colour = niche), data = best_agg[type == "full"]) +
+  scale_y_log10() +
+  geom_point() +
+  geom_errorbar(aes(ymin = mean_val - se_val, ymax = mean_val + se_val), width = 0.2) +
+  labs(x = "Optimizer", y = "Average Validation Error", colour = "") +
+  facet_wrap(~ header, scales = "free", ncol = 4L) +
+  theme_minimal() +
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
+ggsave("plots/best_val.png", plot = g, device = "png", width = 12, height = 7)
+
 g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type == "full"]) +
   scale_y_log10() +
   geom_point() +
@@ -84,7 +94,7 @@ g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type 
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 7)
 
 # best summed validation and test performance over niches
 best_sum = best[, .(overall_test = sum(test_loss), overall_val = sum(val_loss)), by = .(method, repl, scenario, instance, niches, type)]
@@ -216,7 +226,7 @@ g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 3)
+ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 7/3)
 
 pareto_long = map_dtr(unique(pareto$scenario), function(scenario_) {
   map_dtr(unique(pareto$instance), function(instance_) {
@@ -246,7 +256,7 @@ g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 7)
 
 
 # ert for mo/qdo to mo targets after half of optimization budget
@@ -291,10 +301,11 @@ g = ggplot(aes(x = method, y = mean_missing, colour = niche, fill = niche), data
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = 6)
+ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = (7/3)*2)
 
 # niche boundaries
 library(bbotk)
+source("niches_overlapping.R")
 
 problems = list(nb101_small_nb, nb101_medium_nb, nb101_large_nb,
   nb201_cifar10_small_nb, nb201_cifar10_medium_nb, nb201_cifar10_large_nb,
