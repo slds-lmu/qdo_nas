@@ -24,9 +24,11 @@ for (sf in source_files) {
 }
 source_files = c(source_files, file.path(benchmark_dir, "LearnerRegrBananasNN.R"))
 
-reg = makeExperimentRegistry(file.dir = "/dss/dssfs02/lwp-dss-0001/pr74ze/pr74ze-dss-0000/ru84tad2/registry_qdo_nas_ablation", packages = packages, source = source_files)
-# reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)
+#reg = makeExperimentRegistry(file.dir = "FIXME", packages = packages, source = source_files)
+reg = makeExperimentRegistry(file.dir = NA, packages = packages, source = source_files)  # interactive session
 saveRegistry(reg)
+# reg = loadRegistry("registry_qdo_nas_ablation_clean")  # to inspect the original registry on the cluster
+# tab = getJobTable()
 
 eval_wrapper = function(job, data, instance, ...) {
   # loading reticulate etc. is done in LearnerRegrBananasNN.R
