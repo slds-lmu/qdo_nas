@@ -22,8 +22,7 @@ results_sum_agg = results_sum[, .(mean = mean(overall), se = sd(overall) / sqrt(
 results_sum_agg[, init_budget := 10L]
 results_sum_agg[, max_budget := 100L]
 results_sum_agg[, header := paste0(niches, " | ", feature_var)]
-results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(8, 5, 2, 1, 4, 7, 3, 6, 9)])]
-
+results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(8, 7, 9, 5, 4, 6, 2, 1, 3)])]
 
 g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = results_sum_agg[cumbudget >= init_budget & cumbudget <= max_budget]) +
   scale_y_log10() +
