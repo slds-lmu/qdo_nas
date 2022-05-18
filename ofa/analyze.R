@@ -24,6 +24,7 @@ results_sum_agg[, max_budget := 100L]
 results_sum_agg[, header := paste0(niches, " | ", feature_var)]
 results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(8, 7, 9, 5, 4, 6, 2, 1, 3)])]
 
+# Figure 3
 g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = results_sum_agg[cumbudget >= init_budget & cumbudget <= max_budget]) +
   scale_y_log10() +
   geom_step() +
@@ -90,5 +91,6 @@ boundaries[, niches := rep(c("Small", "Medium", "Large"), each = 10)]
 boundaries[, problem := paste0(scenario, "_", instance, "_", niches)]
 boundaries[, niche := factor(niche, levels = paste0("Niche ", 1:10))]
 
+# Table 4
 print(xtable(dcast(boundaries, problem ~ niche, value.var = "nbs")[c(3, 2, 1)]), include.rownames = FALSE)
 

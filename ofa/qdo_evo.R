@@ -1,6 +1,6 @@
-library(data.table)
-library(ggplot2)
-library(xtable)
+library(data.table)  # 1.14.2
+library(ggplot2)  # 3.3.5
+library(xtable)  # 1.8-4
 
 # ~ 50000 architecture evals in total
 qdo = setDT(read.csv("results/qdo.csv"))
@@ -20,8 +20,8 @@ dat_evo[, method := "evo"]
 dat = rbind(dat_qdo, dat_evo)
 dat[, val_loss := 100 - 100 * value]
 dat$niche = factor(dat$niche, labels = paste0("[0, ", c(15, 18, 21, 24, 27, 30, 33), ")"))
-dat$method = factor(dat$method, labels = c("OFA + reg. evo.", "OFA + MAP-Elites"))
-dat[, budget := "Large"]
+dat$method = factor(dat$method, labels = c("OFA + Reg. Evo.", "OFA + MAP-Elites"))
+dat[, budget := "Large Budget"]
 
 # ~ 5000 architecture evals in total
 qdo_small = setDT(read.csv("results/qdo_small.csv"))
@@ -41,12 +41,14 @@ dat_evo_small[, method := "evo"]
 dat_small = rbind(dat_qdo_small, dat_evo_small)
 dat_small[, val_loss := 100 - 100 * value]
 dat_small$niche = factor(dat_small$niche, labels = paste0("[0, ", c(15, 18, 21, 24, 27, 30, 33), ")"))
-dat_small$method = factor(dat_small$method, labels = c("OFA + reg. evo.", "OFA + MAP-Elites"))
-dat_small[, budget := "Small"]
+dat_small$method = factor(dat_small$method, labels = c("OFA + Reg. Evo.", "OFA + MAP-Elites"))
+dat_small[, budget := "Small Budget"]
 
 dat = rbind(dat, dat_small)
+# Table 2
 dat_agg = dat[, .(mean = mean(val_loss), se = sd(val_loss) / sqrt(.N)), by = .(niche, method, budget)]
 
+# Figure 8
 g = ggplot(dat, aes(x = niche, y = val_loss, colour = method)) +
   geom_boxplot() +
   xlab("Niche (Latency in ms)") +

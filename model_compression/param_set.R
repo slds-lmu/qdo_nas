@@ -15,6 +15,7 @@ domain = ps(
   temp = p_dbl(0, 100, depends = kd == TRUE)
 )
 
+# Table 8
 search_space = ps(
   pruning_mode = p_fct(c("conv0", "conv1", "conv2", "conv1andconv2", "all")),
   pruner_name = p_fct(c("l1", "l2", "slim", "agp", "fpgm", "mean_activation", "apoz", "taylorfo")),

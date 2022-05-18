@@ -59,6 +59,7 @@ results_sum_agg[scenario == "NAS-Bench-201", max_budget := 200L * 200L]
 results_sum_agg[, header := paste0(niches, " ", scenario, " ", instance)]
 results_sum_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
+# Figure 2
 # anytime performance of summed validation error
 g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = results_sum_agg[cumbudget >= init_budget & cumbudget <= max_budget]) +
   scale_y_log10() +
@@ -70,12 +71,13 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   theme(legend.position = "bottom")
 ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 7)
 
-# average best final test loss of the best final val loss architecture per niche
+# average best final valid and test loss of the best final val loss architecture per niche
 best_agg = best[, .(mean_test = mean(test_loss), se_test = sd(test_loss) / sqrt(.N), mean_val = mean(val_loss), se_val = sd(val_loss) / sqrt(.N)), by = .(scenario, instance, method, niches, niche, type)]
 best_agg$niche = factor(best_agg$niche, levels = paste0("niche", 1:10), labels = paste0("Niche ", 1:10))
 best_agg[, header := paste0(niches, " ", scenario, " ", instance)]
 best_agg[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
+# Figure 6
 g = ggplot(aes(x = method, y = mean_val, colour = niche), data = best_agg[type == "full"]) +
   scale_y_log10() +
   geom_point() +
@@ -83,9 +85,10 @@ g = ggplot(aes(x = method, y = mean_val, colour = niche), data = best_agg[type =
   labs(x = "Optimizer", y = "Average Validation Error", colour = "") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
-  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/best_val.png", plot = g, device = "png", width = 12, height = 7)
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
+ggsave("plots/best_val.png", plot = g, device = "png", width = 12, height = 9)
 
+# Figure 7
 g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type == "full"]) +
   scale_y_log10() +
   geom_point() +
@@ -93,51 +96,64 @@ g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type 
   labs(x = "Optimizer", y = "Average Test Error", colour = "") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
-  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 7)
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
+ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 9)
 
 # best summed validation and test performance over niches
 best_sum = best[, .(overall_test = sum(test_loss), overall_val = sum(val_loss)), by = .(method, repl, scenario, instance, niches, type)]
 best_sum_agg = best_sum[, .(mean_test = mean(overall_test), se_test = sd(overall_test) / sqrt(.N), mean_val = mean(overall_val), se_val = sd(overall_val) / sqrt(.N)), by = .(method, scenario, instance, niches, type)]
 best_sum_agg[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
 
-# average rank based on the average final test loss summed over niches
+# Table 1
 methods = c("BOP-ElitesHB", "qdHB", "BOP-Elites*", "ParEGOHB", "moHB*", "ParEGO*", "Random")
-ranks = map_dtr(unique(best_sum_agg$scenario), function(scenario_) {
+# average rank based on the average final test loss summed over niches
+ranks_valid = map_dtr(unique(best_sum_agg$scenario), function(scenario_) {
   map_dtr(unique(best_sum_agg$instance), function(instance_) {
     map_dtr(unique(best_sum_agg$niches), function(niches_) {
       res = best_sum_agg[scenario == scenario_ & instance == instance_ & niches == niches_ & type == "full"]
       if (nrow(res) == 0L) {  # not all instances present for all scenarios
         return(data.table())
       }
-      setorderv(res, "mean_val")  # switch mean_test to mean_val to get final validation performance ranking
+      setorderv(res, "mean_val")
       data.table(rank = match(methods, res$method), method = methods, scenario = scenario_, instance = instance_, niches = niches_)
     })
   })
 })
-ranks[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
-ranks_agg = ranks[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(method)]
+ranks_valid[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
+ranks_valid_agg = ranks_valid[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(method)]
+# average rank based on the average final test loss summed over niches
+ranks_test = map_dtr(unique(best_sum_agg$scenario), function(scenario_) {
+  map_dtr(unique(best_sum_agg$instance), function(instance_) {
+    map_dtr(unique(best_sum_agg$niches), function(niches_) {
+      res = best_sum_agg[scenario == scenario_ & instance == instance_ & niches == niches_ & type == "full"]
+      if (nrow(res) == 0L) {  # not all instances present for all scenarios
+        return(data.table())
+      }
+      setorderv(res, "mean_test")
+      data.table(rank = match(methods, res$method), method = methods, scenario = scenario_, instance = instance_, niches = niches_)
+    })
+  })
+})
+ranks_test[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
+ranks_test_agg = ranks_test[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by = .(method)]
 
 # CD plots
+# Figure 5 a) and b)
 library(scmamp)  # 0.3.2
-tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])  # switch mean_test to mean_val to get final validation performance ranking
-friedmanTest(tmp)  # test: Friedman's chi-squared = 52.143, df = 6, p-value = 1.745e-09; val: Friedman's chi-squared = 53.464, df = 6, p-value = 9.46e-10
+tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_val")[, -1])
+friedmanTest(tmp)  # val: Friedman's chi-squared = 53.464, df = 6, p-value = 9.46e-10
+png("plots/cd_val.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+plotCD(tmp)
+dev.off()
+
+tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])
+friedmanTest(tmp)  # test: Friedman's chi-squared = 52.143, df = 6, p-value = 1.745e-09
 png("plots/cd_test.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
-# concensus rankings
-library(relations)  # 0.6-11
-all_ranks = map(unique(best_sum_agg$problem), function(problem_) {
-  agg = best_sum_agg[type == "full" & problem == problem_]
-  setorderv(agg, "mean_test")
-  ranking(agg$method, domain = agg$optimizer, decreasing = FALSE, complete = TRUE)
-})
-all_ranks = relation_ensemble(list = all_ranks)
-consensus = relation_consensus(all_ranks, method = "SD/L")
-ids = tryCatch(relation_class_ids(consensus), error = function(ec) NA_integer_)
-
 # anovas
+# Table 5 and 6
 library(xtable)  # 1.8-4
 bold = function(x) {paste("\\textbf{", x, "}", sep = "")}
 
@@ -171,7 +187,6 @@ shapiro.test(residuals(lm_full))
 
 # mo analysis
 worst = data.table(scenario = c("NAS-Bench-101", "NAS-Bench-201"), y1 = c(100, 100), y2 = c(49979275, 0.0283))
-
 best_pareto = map_dtr(unique(pareto$scenario), function(scenario_) {
   map_dtr(unique(pareto$instance), function(instance_) {
     map_dtr(unique(pareto$niches), function(niches_) {
@@ -197,6 +212,7 @@ get_hvi = function(pareto_, scenario_, instance_, niches_) {
   emoa::hypervolume_indicator(tmp, o = best_pareto_, ref = ref)
 }
 
+# Figure 12
 pareto[, hvi := get_hvi(pareto, scenario, instance, niches), by = .(method, scenario, instance, niches, repl)]
 pareto_agg = pareto[, .(mean_hvi = mean(hvi), se_hvi = sd(hvi) / sqrt(.N)), by = .(method, scenario, instance, niches)]
 pareto_agg[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
@@ -206,18 +222,10 @@ png("plots/cd_hvi.png", width = 6, height = 2, units = "in", res = 300, pointsiz
 plotCD(tmp)
 dev.off()
 
-pareto_ranks = map(unique(pareto_agg$problem), function(problem_) {
-  agg = pareto_agg[problem == problem_]
-  setorderv(agg, "mean_hvi")
-  ranking(agg$method, domain = agg$optimizer, decreasing = FALSE, complete = TRUE)
-})
-pareto_ranks = relation_ensemble(list = pareto_ranks)
-consensus = relation_consensus(pareto_ranks, method = "SD/L")
-ids = tryCatch(relation_class_ids(consensus), error = function(ec) NA_integer_)
-
 pareto_agg[, header := paste0(" ", scenario, " ", instance)]
 pareto_agg[, header := factor(header)]
 
+# Figure 11
 g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   scale_y_log10() +
   geom_point() +
@@ -225,8 +233,8 @@ g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   labs(x = "Optimizer", y = "Average HVI", colour = "Niches") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
-  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 7/3)
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
+ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 9/3)
 
 pareto_long = map_dtr(unique(pareto$scenario), function(scenario_) {
   map_dtr(unique(pareto$instance), function(instance_) {
@@ -249,10 +257,11 @@ pareto_long[scenario == "NAS-Bench-201", y2 := latency]
 pareto_long[, header := paste0(niches, " ", scenario, " ", instance)]
 pareto_long[, header := factor(header, levels = levels(factor(header))[c(9:12, 5:8, 1:4)])]
 
+# Figure 13
 g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method %in% c("BOP-Elites*", "ParEGO*", "Random")]) +
   geom_point(alpha = 0.7) +
   geom_step(aes(linetype = method), direction = "hv", lwd = 1, alpha = 0.7) +
-  labs(x = "Log(Number of Parameters) / Latency", y = "Validation Error", colour = "Optimizer", linetype = "Optimizer") +
+  labs(x = "Log(# Params) / Latency", y = "Validation Error", colour = "Optimizer", linetype = "Optimizer") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
@@ -260,6 +269,7 @@ ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 7)
 
 
 # ert for mo/qdo to mo targets after half of optimization budget
+# Table 7
 comparisons = list(c(qdo_method = "BOP-ElitesHB", mo_method = "ParEGOHB"), c(qdo_method = "qdHB", mo_method = "moHB*"), c(qdo_method = "BOP-Elites*", mo_method = "ParEGO*"))
 ert_comparisons = map_dtr(comparisons, function(comparison) {
   qdo_method = comparison["qdo_method"]
@@ -288,6 +298,7 @@ ert_comparisons_agg = ert_comparisons[, .(mean_ert = mean(ert_fraction_scaled), 
 
 print(xtable(dcast(ert_comparisons, problem ~ qdo_method, value.var = "ert_fraction_scaled")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
 
+# Figure 9
 # missing niches analysis
 best[, missing := (val_loss == 100), by = .(niche, method, repl, scenario, instance, niches)]
 best_missing = best[, .(mean_missing = mean(missing)), by = .(niche, method, scenario, instance, niches)]
@@ -297,11 +308,11 @@ best_missing[, header := factor(header, levels = levels(factor(header))[c(9:12, 
 best_missing[mean_missing == 0, mean_missing := NA_real_]
 g = ggplot(aes(x = method, y = mean_missing, colour = niche, fill = niche), data = best_missing[niches != "Small"]) +  # small has 0
   geom_bar(position = "stack", stat = "identity") +
-  labs(x = "Optimizer", y = "Rel. Freq. Niche Missed", colour = "Niche", fill = "Niche") +
+  labs(x = "Optimizer", y = "Rel. Freq. Niche Missed", colour = "", fill = "") +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
-  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.5), angle = 90, hjust = 0))
-ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = (7/3)*2)
+  theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
+ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = (9/3)*2)
 
 # niche boundaries
 library(bbotk)
@@ -333,5 +344,6 @@ boundaries[, niches := rep(rep(c("Small", "Medium", "Large"), each = 10), 4)]
 boundaries[, problem := paste0(scenario, "_", instance, "_", niches)]
 boundaries[, niche := factor(niche, levels = paste0("Niche ", 1:10))]
 
+# Table 4
 print(xtable(dcast(boundaries, problem ~ niche, value.var = "nbs")[c(3, 2, 1, 6, 5, 4, 9, 8, 7, 12, 11, 10)]), include.rownames = FALSE)
 

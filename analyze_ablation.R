@@ -15,6 +15,7 @@ results_sum_agg = results_sum[, .(mean = mean(overall), se = sd(overall) / sqrt(
 results_sum_agg[, init_budget := 10L * 108L]
 results_sum_agg[, max_budget := 100L * 108L]
 
+# Figure 10
 # anytime performance of summed validation error
 g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = results_sum_agg[cumbudget >= init_budget & cumbudget <= max_budget]) +
   scale_y_log10() +
