@@ -22,5 +22,5 @@ g = ggplot(aes(x = params, y = val_err), data = extended) +
   theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(), panel.background = element_blank(),
         axis.line = element_line(colour = "black"),
         axis.text.x = element_blank(), axis.ticks.x = element_blank(), axis.text.y = element_blank(), axis.ticks.y = element_blank())
-ggsave("plots/pareto_plot.png", plot = g, device = "png", width = 6, height = 3)
+ggsave("plots/pareto_plot.pdf", plot = g, device = "pdf", width = 6, height = 3)
 

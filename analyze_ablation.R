@@ -24,7 +24,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   labs(x = "Total Budget used (Epochs)", y = "Average Validation Error Summed over Niches", colour = "Variant", fill = "Variant") +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/anytime_ablation.png", plot = g, device = "png", width = 8, height = 6)
+ggsave("plots/anytime_ablation.pdf", plot = g, device = "pdf", width = 8, height = 6)
 
 # missing niches analysis
 results[, missing := (incumbent == 100), by = .(niche, cumbudget, method, repl)]

@@ -5,7 +5,7 @@ library(mlr3misc)  # 0.10.0
 
 # data
 results = readRDS("results/results.rds")
-results$feature_var = factor(results$feature_var, levels = c("latency", "flops"), labels = c("Latency", "Flops"))
+results$feature_var = factor(results$feature_var, levels = c("latency", "flops"), labels = c("Latency", "FLOPS"))
 results$niches = factor(results$niches, levels = c("small", "medium", "large"), labels = c("Small", "Medium", "Large"))
 results$method = factor(results$method, levels = c("bop", "parego", "random_search"), labels = c("BOP-Elites*", "ParEGO*", "Random"))
 
@@ -34,7 +34,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   theme_minimal() +
   theme(legend.position = "bottom")
 
-ggsave("plots/anytime_mobilenet.png", plot = g, device = "png", width = 9, height = 5.25)
+ggsave("plots/anytime_mobilenet.pdf", plot = g, device = "pdf", width = 9, height = 5.25)
 
 # niche boundaries
 library(xtable)

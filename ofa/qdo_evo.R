@@ -58,5 +58,5 @@ g = ggplot(dat, aes(x = niche, y = val_loss, colour = method)) +
   theme_minimal() +
   theme(legend.position = "bottom")
 
-ggsave("plots/qdo_evo.png", plot = g, width = 8, height = 4)
+ggsave("plots/qdo_evo.pdf", plot = g, device = "pdf", width = 8, height = 4)
 

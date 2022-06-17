@@ -69,7 +69,7 @@ g = ggplot(aes(x = cumbudget, y = mean, colour = method, fill = method), data = 
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/anytime.png", plot = g, device = "png", width = 12, height = 7)
+ggsave("plots/anytime.pdf", plot = g, device = "pdf", width = 12, height = 7)
 
 # average best final valid and test loss of the best final val loss architecture per niche
 best_agg = best[, .(mean_test = mean(test_loss), se_test = sd(test_loss) / sqrt(.N), mean_val = mean(val_loss), se_val = sd(val_loss) / sqrt(.N)), by = .(scenario, instance, method, niches, niche, type)]
@@ -86,7 +86,7 @@ g = ggplot(aes(x = method, y = mean_val, colour = niche), data = best_agg[type =
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
-ggsave("plots/best_val.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/best_val.pdf", plot = g, device = "pdf", width = 12, height = 9)
 
 # Figure 7
 g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type == "full"]) +
@@ -97,7 +97,7 @@ g = ggplot(aes(x = method, y = mean_test, colour = niche), data = best_agg[type 
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
-ggsave("plots/best_test.png", plot = g, device = "png", width = 12, height = 9)
+ggsave("plots/best_test.pdf", plot = g, device = "pdf", width = 12, height = 9)
 
 # best summed validation and test performance over niches
 best_sum = best[, .(overall_test = sum(test_loss), overall_val = sum(val_loss)), by = .(method, repl, scenario, instance, niches, type)]
@@ -142,13 +142,13 @@ ranks_test_agg = ranks_test[, .(mean = mean(rank), se = sd(rank) / sqrt(.N)), by
 library(scmamp)  # 0.3.2
 tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_val")[, -1])
 friedmanTest(tmp)  # val: Friedman's chi-squared = 53.464, df = 6, p-value = 9.46e-10
-png("plots/cd_val.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+pdf("plots/cd_val.pdf", width = 6, height = 2, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
 tmp = - as.matrix(dcast(best_sum_agg[type == "full"], problem ~ method, value.var = "mean_test")[, -1])
 friedmanTest(tmp)  # test: Friedman's chi-squared = 52.143, df = 6, p-value = 1.745e-09
-png("plots/cd_test.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+pdf("plots/cd_test.pdf", width = 6, height = 2, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
@@ -218,7 +218,7 @@ pareto_agg = pareto[, .(mean_hvi = mean(hvi), se_hvi = sd(hvi) / sqrt(.N)), by =
 pareto_agg[, problem := as.factor(paste0(scenario, "_", instance, "_", niches))]
 tmp = - as.matrix(dcast(pareto_agg, problem ~ method, value.var = "mean_hvi")[, -1])
 friedmanTest(tmp)  # Friedman's chi-squared = 41.607, df = 6, p-value = 2.198e-07
-png("plots/cd_hvi.png", width = 6, height = 2, units = "in", res = 300, pointsize = 10)
+pdf("plots/cd_hvi.pdf", width = 6, height = 2, pointsize = 10)
 plotCD(tmp)
 dev.off()
 
@@ -234,7 +234,7 @@ g = ggplot(aes(x = method, y = mean_hvi, colour = niches), data = pareto_agg) +
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
-ggsave("plots/hvi.png", plot = g, device = "png", width = 12, height = 9/3)
+ggsave("plots/hvi.pdf", plot = g, device = "pdf", width = 12, height = 9/3)
 
 pareto_long = map_dtr(unique(pareto$scenario), function(scenario_) {
   map_dtr(unique(pareto$instance), function(instance_) {
@@ -265,7 +265,7 @@ g = ggplot(aes(x = y2, y = val_loss, colour = method), data = pareto_long[method
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom")
-ggsave("plots/pareto.png", plot = g, device = "png", width = 12, height = 7)
+ggsave("plots/pareto.pdf", plot = g, device = "pdf", width = 12, height = 7)
 
 
 # ert for mo/qdo to mo targets after half of optimization budget
@@ -312,7 +312,7 @@ g = ggplot(aes(x = method, y = mean_missing, colour = niche, fill = niche), data
   facet_wrap(~ header, scales = "free", ncol = 4L) +
   theme_minimal() +
   theme(legend.position = "bottom", axis.text.x = element_text(size = rel(0.85), angle = 45, hjust = 1))
-ggsave("plots/missing.png", plot = g, device = "png", width = 12, height = (9/3)*2)
+ggsave("plots/missing.pdf", plot = g, device = "pdf", width = 12, height = (9/3)*2)
 
 # niche boundaries
 library(bbotk)
