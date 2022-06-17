@@ -70,3 +70,8 @@ and put them in `naszilla/nas_benchmark_datasets/`.
 Finally, if you want to rerun experiments, make sure to adapt some paths to point at your newly created virtualenv, i.e., in `optimizers.R` and `LearnerRegrBananasNN.R`.
 We indicate this via `"FIXME_python_path_of_your_virtualenv"` as a placeholder.
 
+# A Note On Licenses
+
+- [Naszilla](https://github.com/naszilla/naszilla) (Apache-2.0 License) was used for the [NAS-Bench-101](https://github.com/google-research/nasbench) (Apache-2.0 License) and [NAS-Bench-201](https://github.com/D-X-Y/NAS-Bench-201) (MIT License) benchmarks; modifications to the original Naszilla code are noted in the respective files
+- For benchmarks on the MobileNetV3 search space the [Once-for-All](https://github.com/mit-han-lab/once-for-all) module was used (MIT License)
+- The model compression application was performed using [NNI](https://github.com/microsoft/nni) (MIT License) relying on the Stanford Dogs dataset (MIT License)

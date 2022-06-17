@@ -2,7 +2,7 @@ This directory contains all code regarding our benchmarks on the MobileNetV3 sea
 
 * `results/` contains raw benchmark results saved as `.rds` or `.csv` files
 * `plots/` contains all plots presented in the paper
-* `latency_tools/` contains latency look-up tables provided by Once-for-All (they can be redownloaded via `download.py`)
+* `latency_tools/` contains latency look-up tables provided by Once-for-All (they can be re-downloaded via `download.py`)
 * `run.R` and `run_2F.R` are the main files used for the benchmark experiments on the MobileNetV3 search space using
   accuracy predictors and look-up tables of Once-for-All; `run_2F.R` contains the experiments for the setting of two
   feature functions (latency and size)
